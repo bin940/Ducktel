@@ -3,7 +3,7 @@ WORKDIR /app
 COPY settings.gradle .
 COPY build.gradle .
 COPY ./src ./src
-RUN gradle build --no-daemon -x test  # JAR 파일 빌드
+RUN gradle bootJar --no-daemon -x test
 
 FROM openjdk:17
 WORKDIR /app

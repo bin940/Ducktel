@@ -5,6 +5,12 @@ services:
     build:
       context: ./DucktelBack  # Dockerfile 위치
       dockerfile: Dockerfile  # Dockerfile 파일 경로로
+    volumes:
+      - ./DucktelBack/src:/app/src
+      - ./DucktelBack/build.gradle:/app/build.gradle
+      - ./DucktelBack/settings.gradle:/app/settings.gradle
+
+    command: mvn spring-boot:run
 
     ports:
       - "8091:8091"  # 호스트의 8091번 포트를 컨테이너의 8091번 포트에 매핑 (Spring Boot)
