@@ -1,0 +1,47 @@
+services:
+
+  backend:
+    container_name: ducktel-backend
+    build:
+      context: ./DucktelBack  # Dockerfile 위치
+      dockerfile: Dockerfile  # Dockerfile 파일 경로로
+
+    ports:
+      - "8091:8091"  # 호스트의 8091번 포트를 컨테이너의 8091번 포트에 매핑 (Spring Boot)
+
+    depends_on:
+      - db
+    networks:
+      - app-network
+
+  frontend:
+    container_name: ducktel-frontend
+    build:
+      context: ./ducktel_front  # Vue 애플리케이션 코드가 위치한 디렉토리
+      dockerfile: Dockerfile  # 프론트엔드 Dockerfile 경로
+    volumes:
+      - ./ducktel_front:/app  # 로컬 소스 디렉토리를 컨테이너의 /app에 마운트
+    ports:
+      - "80:80"  # 호스트의 80번 포트를 컨테이너의 80번 포트에 매핑 (Nginx)
+    depends_on:
+      - backend  # 백엔드가 먼저 실행되도록 설정
+    networks:
+      - app-network  # 프론트엔드가 사용할 네트워크 지정
+
+  db:
+    image: mysql:8.0  # MySQL 이미지 사용
+    env_file:
+      - ./MySQL/.env          # 추가 사용자 비밀번호
+    ports:
+      - "3307:3306"  # MySQL의 기본 포트
+    volumes:
+      - db_data:/var/lib/mysql  # MySQL 데이터 저장소를 호스트와 공유
+
+    networks:
+      - app-network
+
+volumes:
+  db_data:  # MySQL 데이터 저장소
+networks:
+  app-network:
+    driver: bridge  # 컨테이너들이 서로 통신할 수 있도록 브리지 네트워크 사용
