@@ -21,12 +21,10 @@ public class JwtVerifyFilter extends OncePerRequestFilter {
 
     //jwt 필터를 거치지 않을 URL 을 설정
     private static final String[] whitelist = {
-            "/api/auth/**",
+            "/api/auth/register",
             "/",
-            "/api/login/**",
-            "/api/oauth2/**",
+            "/api/auth/login",
             "/favicon.ico",
-            "/api/users/username/check/**",
             "/login"
     };
 
