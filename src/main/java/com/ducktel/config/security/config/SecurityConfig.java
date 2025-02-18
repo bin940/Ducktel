@@ -97,7 +97,7 @@ public class SecurityConfig {
 
         // 경로 권한 설정
         http.authorizeHttpRequests(auth -> auth
-                .requestMatchers("/favicon.ico","/login").permitAll() // 로그인, 회원가입 등 인증 불필요
+                .requestMatchers("/favicon.ico","/api/users/register","/api/auth/login").permitAll() // 로그인, 회원가입 등 인증 불필요
                 .anyRequest().authenticated() // 나머지 요청은 인증 필요
         );
 
