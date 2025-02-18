@@ -1,6 +1,6 @@
 package com.ducktel.service;
 
-import com.ducktel.config.security.exception.CustomException;
+import com.ducktel.exception.CustomException;
 import com.ducktel.domain.entity.User;
 import com.ducktel.domain.repository.UserRepository;
 import com.ducktel.dto.UserDTO;

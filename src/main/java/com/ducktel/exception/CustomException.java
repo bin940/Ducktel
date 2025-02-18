@@ -1,4 +1,4 @@
-package com.ducktel.config.security.exception;
+package com.ducktel.exception;
 
 public class CustomException extends RuntimeException {
     private final String errorCode;
