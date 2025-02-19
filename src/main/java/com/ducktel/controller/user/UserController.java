@@ -1,8 +1,9 @@
 package com.ducktel.controller.user;
 
 import com.ducktel.config.security.jwt.JwtUtils;
-import com.ducktel.domain.repository.UserRepository;
+import com.ducktel.dto.BookingDetailDTO;
 import com.ducktel.dto.UserDTO;
+import com.ducktel.service.BookingService;
 import com.ducktel.service.UserService;
 import com.ducktel.validation.UpdateUser;
 import jakarta.servlet.http.HttpServletRequest;
@@ -15,12 +16,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/users")
 @Slf4j
 public class UserController {
     private final UserService userService;
+    private final BookingService bookingService;
 
     @PostMapping("/register")
     public ResponseEntity<String> registerUser(@Valid @RequestBody UserDTO userDTO) {
@@ -51,5 +55,12 @@ public class UserController {
     public ResponseEntity<String> deleteProfile(@PathVariable("userId") Long userId){
         String result =userService.deleteProfile(userId);
         return ResponseEntity.ok(result);
+    }
+    @GetMapping("/book")
+    public ResponseEntity<List<BookingDetailDTO>> getBookingDetail(HttpServletRequest request){
+        String token = JwtUtils.getTokenFromHeader(request.getHeader("Authorization"));
+        Long userId = JwtUtils.getUserIdFromToken(token);
+        List<BookingDetailDTO> bookingDetail = bookingService.getBookingDetail(userId);
+        return ResponseEntity.ok(bookingDetail);
     }
 }

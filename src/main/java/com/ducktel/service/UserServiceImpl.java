@@ -52,4 +52,5 @@ public class UserServiceImpl implements UserService {
         userRepository.deleteById(userId);
         return "삭제되었습니다.";
     }
+
 }
