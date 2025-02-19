@@ -1,6 +1,7 @@
 package com.ducktel.config.security.config;
 
 import com.ducktel.config.security.hadler.CommonLoginSuccessHandler;
+import com.ducktel.config.security.jwt.JwtVerifyFilter;
 import com.ducktel.config.security.service.CustomOauth2UserService;
 import com.ducktel.config.security.service.CustomUserDetailsService;
 import jakarta.servlet.http.HttpServletResponse;
@@ -18,7 +19,9 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -124,6 +127,8 @@ public class SecurityConfig {
                     response.getWriter().write("{\"error\": \"OAuth2 Login Failed\"}");
                 })
         );
+        http.addFilterBefore(new JwtVerifyFilter(), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterAfter(new JwtVerifyFilter(), OAuth2LoginAuthenticationFilter.class);
 
 
         return http.build();

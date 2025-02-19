@@ -5,6 +5,7 @@ import com.ducktel.domain.entity.User;
 import com.ducktel.domain.repository.UserRepository;
 import com.ducktel.dto.UserDTO;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -22,5 +23,13 @@ public class UserServiceImpl implements UserService {
 
         User result= userRepository.save(user);
         return result.getName();
+    }
+
+    @Override
+    public UserDTO getProfile(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UsernameNotFoundException("등록되지 않은 사용자입니다: " + userId));
+
+        return user.getUser();
     }
 }

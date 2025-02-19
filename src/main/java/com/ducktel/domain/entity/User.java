@@ -1,5 +1,6 @@
 package com.ducktel.domain.entity;
 
+import com.ducktel.dto.UserDTO;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
@@ -75,5 +76,14 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    public UserDTO getUser(){
+        return new UserDTO(
+                this.username,
+                this.name,
+                this.phoneNumber,
+                this.email
+        );
     }
 }

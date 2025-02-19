@@ -1,17 +1,16 @@
 package com.ducktel.controller.user;
 
+import com.ducktel.config.security.jwt.JwtUtils;
 import com.ducktel.domain.repository.UserRepository;
 import com.ducktel.dto.UserDTO;
 import com.ducktel.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -30,5 +29,12 @@ public class UserController {
             log.error("회원가입 실패: {}",e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("회원가입 실패!" + e.getMessage());
         }
+    }
+    @GetMapping("/profile")
+    public ResponseEntity<UserDTO> getProfile(HttpServletRequest request){
+        String token = JwtUtils.getTokenFromHeader(request.getHeader("Authorization"));
+        Long userId = JwtUtils.getUserIdFromToken(token);
+        UserDTO user = userService.getProfile(userId);
+        return ResponseEntity.ok(user);
     }
 }

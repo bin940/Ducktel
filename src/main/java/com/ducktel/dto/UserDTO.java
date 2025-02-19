@@ -45,6 +45,13 @@ public class UserDTO {
         user.setRole("ROLE_USER");
         return user;
     }
+    public UserDTO( String username, String email, String phoneNumber, String name) {
+        this.username = username;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
+        this.name = name;
+    }
+
 
 
 }
