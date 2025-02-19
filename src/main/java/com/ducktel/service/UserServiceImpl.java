@@ -43,4 +43,13 @@ public class UserServiceImpl implements UserService {
 
         return updatedUser.updateUser();
     }
+
+    @Override
+    public String deleteProfile(Long userId) {
+        if (!userRepository.existsById(userId)) {
+            throw new CustomException("NOT FOUND", "유저를 찾을 수 없습니다. ID: " + userId);
+        }
+        userRepository.deleteById(userId);
+        return "삭제되었습니다.";
+    }
 }
