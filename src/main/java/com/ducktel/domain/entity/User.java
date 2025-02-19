@@ -86,4 +86,10 @@ public class User implements UserDetails {
                 this.email
         );
     }
+    public UserDTO updateUser(){
+        return new UserDTO(
+                this.phoneNumber,
+                this.email
+        );
+    }
 }

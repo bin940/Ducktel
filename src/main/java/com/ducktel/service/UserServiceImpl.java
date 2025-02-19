@@ -32,4 +32,15 @@ public class UserServiceImpl implements UserService {
 
         return user.getUser();
     }
+
+    @Override
+    public UserDTO updateProfile(Long userId, UserDTO userData) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UsernameNotFoundException("등록되지 않은 사용자입니다: " + userId));
+       user = userData.updateUser(user);
+
+        User updatedUser = userRepository.save(user);
+
+        return updatedUser.updateUser();
+    }
 }

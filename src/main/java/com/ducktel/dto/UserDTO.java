@@ -3,6 +3,7 @@ package com.ducktel.dto;
 
 import com.ducktel.domain.entity.User;
 import com.ducktel.validation.CreateUser;
+import com.ducktel.validation.UpdateUser;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -25,10 +26,10 @@ public class UserDTO {
     @Size(min = 8, max = 16, message = "비밀번호는 8자 이상 16자 이하로 입력해주세요.")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
-    @NotBlank(message = "전화번호를 입력해주세요.", groups = CreateUser.class)
+    @NotBlank(message = "전화번호를 입력해주세요.", groups = {CreateUser.class, UpdateUser.class})
     @Size(min = 10, max = 11, message = "전화번호는 10자 이상 11자 이하로 입력해주세요.")
     private String phoneNumber;
-    @NotBlank(message = "전화번호를 입력해주세요.", groups = CreateUser.class)
+    @NotBlank(message = "전화번호를 입력해주세요.", groups = {CreateUser.class, UpdateUser.class})
     @Email(message = "이메일 형식에 맞게 입력해주세요.")
     private String email;
     @NotBlank(message = "아이디를 입력해주세요.", groups = CreateUser.class)
@@ -50,6 +51,15 @@ public class UserDTO {
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.name = name;
+    }
+    public UserDTO( String email, String phoneNumber) {
+        this.email = email;
+        this.phoneNumber = phoneNumber;
+    }
+    public User updateUser(User user) {
+       user.setUsername(this.phoneNumber);
+       user.setEmail(this.email);
+        return user;
     }
 
 

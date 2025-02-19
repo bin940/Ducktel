@@ -4,12 +4,15 @@ import com.ducktel.config.security.jwt.JwtUtils;
 import com.ducktel.domain.repository.UserRepository;
 import com.ducktel.dto.UserDTO;
 import com.ducktel.service.UserService;
+import com.ducktel.validation.UpdateUser;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import jakarta.validation.groups.Default;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -35,6 +38,13 @@ public class UserController {
         String token = JwtUtils.getTokenFromHeader(request.getHeader("Authorization"));
         Long userId = JwtUtils.getUserIdFromToken(token);
         UserDTO user = userService.getProfile(userId);
+        return ResponseEntity.ok(user);
+    }
+    @PutMapping("/profile")
+    public ResponseEntity<UserDTO> updateProfile(HttpServletRequest request, @Validated({UpdateUser.class, Default.class}) @RequestBody UserDTO userData){
+        String token = JwtUtils.getTokenFromHeader(request.getHeader("Authorization"));
+        Long userId = JwtUtils.getUserIdFromToken(token);
+        UserDTO user = userService.updateProfile(userId, userData);
         return ResponseEntity.ok(user);
     }
 }
