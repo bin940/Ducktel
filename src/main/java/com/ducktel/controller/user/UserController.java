@@ -69,4 +69,22 @@ public class UserController {
 
         return ResponseEntity.ok(updatedBooking);
     }
+    @DeleteMapping("/book/{bookingId}")
+    public ResponseEntity<List<BookingDetailDTO>> deleteBooking(@PathVariable("bookingId") Long bookingId, HttpServletRequest request) {
+        String token = JwtUtils.getTokenFromHeader(request.getHeader("Authorization"));
+        Long userId = JwtUtils.getUserIdFromToken(token);
+
+        List<BookingDetailDTO> deleteBooking = bookingService.deleteBooking(userId, bookingId);
+
+        return ResponseEntity.ok(deleteBooking);
+    }
+    @PostMapping("/password-reset")
+    public ResponseEntity<String> passWordReset(HttpServletRequest request, @RequestBody UserDTO user) {
+        String token = JwtUtils.getTokenFromHeader(request.getHeader("Authorization"));
+        Long userId = JwtUtils.getUserIdFromToken(token);
+        String newPassword = user.getPassword();
+        String result =userService.passWordReset(userId, newPassword);
+        return ResponseEntity.ok(result);
+
+    }
 }

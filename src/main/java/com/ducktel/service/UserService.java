@@ -7,4 +7,5 @@ public interface UserService {
     UserDTO getProfile(Long userId);
     UserDTO updateProfile(Long userId, UserDTO userData);
     String deleteProfile(Long userId);
+    String passWordReset(Long userId, String newPassword);
 }

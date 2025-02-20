@@ -43,6 +43,19 @@ public class BookingServiceImpl implements BookingService {
         return updatedBooking.updateBooking(bookingData);
     }
 
+    @Override
+    public List<BookingDetailDTO> deleteBooking(Long userId, Long bookingId) {
+        if (!bookingRepository.existsById(bookingId)) {
+            throw new CustomException("NOT FOUND", "예약을 찾을 수 없습니다. ID: " + bookingId);
+        }
+
+        bookingRepository.deleteById(bookingId);
+
+        List<Booking> bookings = bookingRepository.findByUser_UserId(userId);
+
+        return convertToBookingDetailDTOList(bookings);
+    }
+
     private List<BookingDetailDTO> convertToBookingDetailDTOList(List<Booking> bookings) {
         return bookings.stream().map(booking -> {
             Room room = roomRepository.findById(booking.getRoom().getRoomId())

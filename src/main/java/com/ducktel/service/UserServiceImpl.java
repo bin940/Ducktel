@@ -5,12 +5,14 @@ import com.ducktel.domain.entity.User;
 import com.ducktel.domain.repository.UserRepository;
 import com.ducktel.dto.UserDTO;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -51,6 +53,13 @@ public class UserServiceImpl implements UserService {
         }
         userRepository.deleteById(userId);
         return "삭제되었습니다.";
+    }
+
+    @Override
+    public String passWordReset(Long userId, String newPassword) {
+        int insert =userRepository.updatePassword(userId, passwordEncoder.encode(newPassword));
+        log.info(insert + "개가 변경 되었습니다.");
+        return "비밀번호가 변경 되었습니다.";
     }
 
 }
