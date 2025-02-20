@@ -1,14 +1,23 @@
 package com.ducktel.domain.entity;
 
+import com.ducktel.dto.BookingDetailDTO;
+import com.ducktel.dto.RoomDTO;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @Entity
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "booking")
+@Builder(toBuilder = true)
 public class Booking {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,4 +47,13 @@ public class Booking {
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+
+    public BookingDetailDTO updateBooking(BookingDetailDTO bookingDTO){
+       return bookingDTO.toBuilder()
+               .startDate(this.startDate)
+               .endDate(this.endDate)
+               .numberOfPerson(this.numberOfPersons)
+               .build();
+    }
 }

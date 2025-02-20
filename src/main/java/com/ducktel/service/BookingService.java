@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface BookingService {
     List<BookingDetailDTO> getBookingDetail(Long userId);
+    BookingDetailDTO updateBooking(BookingDetailDTO bookingData);
 }

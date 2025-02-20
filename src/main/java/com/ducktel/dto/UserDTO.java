@@ -10,6 +10,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,8 +18,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder(toBuilder = true)
 public class UserDTO {
-    @NotBlank(message = "아이디를 입력해주세요.", groups = CreateUser.class)
+    @NotBlank(message = "아이디를 입력해주세요.", groups = {CreateUser.class, UpdateUser.class})
     @Size(min = 6, max = 16, message = "아이디는 6자 이상 16자 이하로 입력해주세요.")
     @Pattern(regexp = "^[a-zA-Z0-9]+$", message = "아이디는 영문자, 숫자만 입력해주세요.")
     private String username;
@@ -32,7 +34,7 @@ public class UserDTO {
     @NotBlank(message = "전화번호를 입력해주세요.", groups = {CreateUser.class, UpdateUser.class})
     @Email(message = "이메일 형식에 맞게 입력해주세요.")
     private String email;
-    @NotBlank(message = "아이디를 입력해주세요.", groups = CreateUser.class)
+    @NotBlank(message = "아이디를 입력해주세요.", groups = {CreateUser.class, UpdateUser.class})
     @Size(min =2, max =8, message= "이름은 2자 이상 8자 이아로 입력해주세요.")
     private String name;
 
@@ -57,7 +59,7 @@ public class UserDTO {
         this.phoneNumber = phoneNumber;
     }
     public User updateUser(User user) {
-       user.setUsername(this.phoneNumber);
+       user.setPhoneNumber(this.phoneNumber);
        user.setEmail(this.email);
         return user;
     }

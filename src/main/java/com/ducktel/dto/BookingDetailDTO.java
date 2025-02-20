@@ -1,5 +1,6 @@
 package com.ducktel.dto;
 
+import com.ducktel.domain.entity.Booking;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,7 +10,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
-@Builder
+@Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
 public class BookingDetailDTO {
@@ -24,5 +25,13 @@ public class BookingDetailDTO {
     private AccommodationDTO accommodation;
     private RoomDTO room;
 
+
+    public Booking updateBooikng(Booking booking) {
+        return booking.toBuilder()
+                .startDate(this.startDate)
+                .endDate(this.endDate)
+                .numberOfPersons(this.numberOfPerson)
+                .build();
+    }
 
 }

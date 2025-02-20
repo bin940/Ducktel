@@ -63,4 +63,10 @@ public class UserController {
         List<BookingDetailDTO> bookingDetail = bookingService.getBookingDetail(userId);
         return ResponseEntity.ok(bookingDetail);
     }
+    @PutMapping("/book")
+    public ResponseEntity<BookingDetailDTO> updateBooking(@RequestBody BookingDetailDTO bookingData) {
+        BookingDetailDTO updatedBooking = bookingService.updateBooking(bookingData);
+
+        return ResponseEntity.ok(updatedBooking);
+    }
 }

@@ -12,8 +12,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 @Entity
-@Getter
-@Setter
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -81,15 +80,15 @@ public class User implements UserDetails {
     public UserDTO getUser(){
         return new UserDTO(
                 this.username,
-                this.name,
+                this.email,
                 this.phoneNumber,
-                this.email
+                this.name
         );
     }
-    public UserDTO updateUser(){
-        return new UserDTO(
-                this.phoneNumber,
-                this.email
-        );
+    public UserDTO updateUser(UserDTO userDTO){
+        return userDTO.toBuilder()
+                .email(this.email)
+                .phoneNumber(this.phoneNumber)
+                .build();
     }
 }
