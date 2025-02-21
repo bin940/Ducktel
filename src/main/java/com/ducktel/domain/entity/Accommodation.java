@@ -26,4 +26,6 @@ public class Accommodation {
     private String tag;
     private String season;
     private Integer discount;
+    @Column(name = "like_count")
+    private int likeCount;
 }
