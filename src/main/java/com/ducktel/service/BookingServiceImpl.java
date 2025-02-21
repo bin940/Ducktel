@@ -1,11 +1,8 @@
 package com.ducktel.service;
 
-import com.ducktel.domain.entity.Booking;
-import com.ducktel.domain.entity.Room;
-import com.ducktel.domain.entity.RoomImage;
-import com.ducktel.domain.repository.BookingRepository;
-import com.ducktel.domain.repository.RoomImageRepository;
-import com.ducktel.domain.repository.RoomRepository;
+import com.ducktel.domain.entity.*;
+import com.ducktel.domain.repository.*;
+import com.ducktel.dto.AccommodationDTO;
 import com.ducktel.dto.BookingDetailDTO;
 import com.ducktel.dto.RoomDTO;
 import com.ducktel.exception.CustomException;
@@ -23,6 +20,8 @@ public class BookingServiceImpl implements BookingService {
     private final BookingRepository bookingRepository;
     private final RoomRepository roomRepository;
     private final RoomImageRepository roomImageRepository;
+    private  final AccommodationRepository accommodationRepository;
+    private  final AccommodationImageRepository accommodationImageRepository;
 
 
     @Override
@@ -61,9 +60,17 @@ public class BookingServiceImpl implements BookingService {
             Room room = roomRepository.findById(booking.getRoom().getRoomId())
                     .orElseThrow(() -> new CustomException("NOT FOUND", "객실 정보를 찾을 수 없습니다."));
 
-            List<String> images = roomImageRepository.findByRoom_RoomId(room.getRoomId())
+            List<String> roomImages = roomImageRepository.findByRoom_RoomId(room.getRoomId())
                     .stream()
                     .map(RoomImage::getImage)
+                    .toList();
+
+            Accommodation accommodation = accommodationRepository.findById(booking.getAccommodation().getAccommodationId())
+                    .orElseThrow(() -> new CustomException("NOT FOUND", "숙소 정보를 찾을 수가 없습니다."));
+
+            List<String> accommodationImages = accommodationImageRepository.findByAccommodation_AccommodationId(accommodation.getAccommodationId())
+                    .stream()
+                    .map(AccommodationImage::getImage)
                     .toList();
 
             return BookingDetailDTO.builder()
@@ -73,6 +80,17 @@ public class BookingServiceImpl implements BookingService {
                     .endDate(booking.getEndDate())
                     .numberOfPerson(booking.getNumberOfPersons())
                     .paymentCompleted(booking.isPaymentCompleted())
+                    .accommodation(AccommodationDTO.builder()
+                            .accommodationId(accommodation.getAccommodationId())
+                            .name(accommodation.getAccommodationName())
+                            .location(accommodation.getLocation())
+                            .tag(accommodation.getTag())
+                            .explanation(accommodation.getExplanation())
+                            .serviceInfo(accommodation.getServiceInfo())
+                            .image(accommodationImages)
+                            .discount(accommodation.getDiscount())
+                            .season(accommodation.getSeason())
+                            .build())
                     .room(RoomDTO.builder()
                             .roomId(room.getRoomId())
                             .name(room.getName())
@@ -82,7 +100,7 @@ public class BookingServiceImpl implements BookingService {
                             .explanation(room.getExplanation())
                             .serviceInfo(room.getServiceInfo())
                             .tag(room.getTag())
-                            .images(images)
+                            .images(roomImages)
                             .build())
                     .build();
         }).collect(Collectors.toList());

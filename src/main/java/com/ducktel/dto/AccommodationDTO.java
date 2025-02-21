@@ -21,13 +21,7 @@ public class AccommodationDTO {
     private String explanation;
     private String serviceInfo;
     private List<String> image;
+    private Integer discount;
+    private String season;
 
-    public AccommodationDTO(Accommodation accommodation) {
-        this.accommodationId = accommodation.getAccommodationId();
-        this.name = accommodation.getAccommodationName();
-        this.location = accommodation.getLocation();
-        this.tag = accommodation.getTag();
-        this.explanation = accommodation.getExplanation();
-        this.serviceInfo = accommodation.getServiceInfo();
-    }
 }
