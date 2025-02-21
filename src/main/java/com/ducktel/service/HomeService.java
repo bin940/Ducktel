@@ -49,6 +49,7 @@ public class HomeService {
                             .image(images)
                             .discount(accommodation.getDiscount())
                             .season(accommodation.getSeason())
+                            .likeCount(accommodation.getLikeCount())
                             .build();
                 })
                 .collect(Collectors.toList());

@@ -90,6 +90,7 @@ public class BookingServiceImpl implements BookingService {
                             .image(accommodationImages)
                             .discount(accommodation.getDiscount())
                             .season(accommodation.getSeason())
+                            .likeCount(accommodation.getLikeCount())
                             .build())
                     .room(RoomDTO.builder()
                             .roomId(room.getRoomId())
