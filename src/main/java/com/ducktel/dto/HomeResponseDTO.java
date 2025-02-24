@@ -12,7 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonInclude(JsonInclude.Include.NON_NULL) // null은 json으로 반환되지않음
 public class HomeResponseDTO {
 
     private List<AccommodationDTO> discountAccommodations;
