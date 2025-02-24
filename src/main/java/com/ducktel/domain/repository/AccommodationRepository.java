@@ -9,4 +9,5 @@ public interface AccommodationRepository extends JpaRepository<Accommodation, Lo
     List<Accommodation> findByDiscountGreaterThan(Integer discount);
     List<Accommodation> findAllByOrderByLikeCountDesc();
     List<Accommodation> findBySeason(String season);
-}
+    List<Accommodation> findByCategory(String category);
+ }

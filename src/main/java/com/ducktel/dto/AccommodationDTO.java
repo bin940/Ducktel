@@ -23,6 +23,7 @@ public class AccommodationDTO {
     private List<String> image;
     private Integer discount;
     private String season;
+    private String category;
     private int likeCount;
 
 }

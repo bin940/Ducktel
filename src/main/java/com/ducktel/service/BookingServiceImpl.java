@@ -91,6 +91,7 @@ public class BookingServiceImpl implements BookingService {
                             .discount(accommodation.getDiscount())
                             .season(accommodation.getSeason())
                             .likeCount(accommodation.getLikeCount())
+                            .category(accommodation.getCategory())
                             .build())
                     .room(RoomDTO.builder()
                             .roomId(room.getRoomId())
