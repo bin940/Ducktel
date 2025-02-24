@@ -2,6 +2,7 @@ package com.ducktel.controller.user;
 
 import com.ducktel.config.security.jwt.JwtUtils;
 import com.ducktel.dto.BookingDetailDTO;
+import com.ducktel.dto.ResponseDTO;
 import com.ducktel.dto.UserDTO;
 import com.ducktel.service.BookingService;
 import com.ducktel.service.UserService;
@@ -38,18 +39,18 @@ public class UserController {
         }
     }
     @GetMapping("/profile")
-    public ResponseEntity<UserDTO> getProfile(HttpServletRequest request){
+    public ResponseEntity<ResponseDTO<?>> getProfile(HttpServletRequest request){
         String token = JwtUtils.getTokenFromHeader(request.getHeader("Authorization"));
         Long userId = JwtUtils.getUserIdFromToken(token);
         UserDTO user = userService.getProfile(userId);
-        return ResponseEntity.ok(user);
+        return ResponseEntity.ok(new ResponseDTO<>(200, null, "유저정보 조회 성공", user));
     }
     @PutMapping("/profile")
-    public ResponseEntity<UserDTO> updateProfile(HttpServletRequest request, @Validated({UpdateUser.class, Default.class}) @RequestBody UserDTO userData){
+    public ResponseEntity<ResponseDTO<?>> updateProfile(HttpServletRequest request, @Validated({UpdateUser.class, Default.class}) @RequestBody UserDTO userData){
         String token = JwtUtils.getTokenFromHeader(request.getHeader("Authorization"));
         Long userId = JwtUtils.getUserIdFromToken(token);
         UserDTO user = userService.updateProfile(userId, userData);
-        return ResponseEntity.ok(user);
+        return ResponseEntity.ok(new ResponseDTO<>(200, null, "유저정보 변경 성공", user));
     }
     @DeleteMapping("/profile/{userId}")
     public ResponseEntity<String> deleteProfile(@PathVariable("userId") Long userId){
@@ -57,26 +58,26 @@ public class UserController {
         return ResponseEntity.ok(result);
     }
     @GetMapping("/book")
-    public ResponseEntity<List<BookingDetailDTO>> getBookingDetail(HttpServletRequest request){
+    public ResponseEntity<ResponseDTO<?>> getBookingDetail(HttpServletRequest request){
         String token = JwtUtils.getTokenFromHeader(request.getHeader("Authorization"));
         Long userId = JwtUtils.getUserIdFromToken(token);
         List<BookingDetailDTO> bookingDetail = bookingService.getBookingDetail(userId);
-        return ResponseEntity.ok(bookingDetail);
+        return ResponseEntity.ok(new ResponseDTO<>(200, null, "예약 조회 성공", bookingDetail));
     }
     @PutMapping("/book")
-    public ResponseEntity<BookingDetailDTO> updateBooking(@RequestBody BookingDetailDTO bookingData) {
+    public ResponseEntity<ResponseDTO<?>> updateBooking(@RequestBody BookingDetailDTO bookingData) {
         BookingDetailDTO updatedBooking = bookingService.updateBooking(bookingData);
 
-        return ResponseEntity.ok(updatedBooking);
+        return ResponseEntity.ok(new ResponseDTO<>(200, null, "예약 변경 성공", updatedBooking));
     }
     @DeleteMapping("/book/{bookingId}")
-    public ResponseEntity<List<BookingDetailDTO>> deleteBooking(@PathVariable("bookingId") Long bookingId, HttpServletRequest request) {
+    public ResponseEntity<ResponseDTO<?>> deleteBooking(@PathVariable("bookingId") Long bookingId, HttpServletRequest request) {
         String token = JwtUtils.getTokenFromHeader(request.getHeader("Authorization"));
         Long userId = JwtUtils.getUserIdFromToken(token);
 
         List<BookingDetailDTO> deleteBooking = bookingService.deleteBooking(userId, bookingId);
 
-        return ResponseEntity.ok(deleteBooking);
+        return ResponseEntity.ok(new ResponseDTO<>(200, null, "예약 취소 성공", deleteBooking));
     }
     @PostMapping("/password-reset")
     public ResponseEntity<String> passWordReset(HttpServletRequest request, @RequestBody UserDTO user) {

@@ -1,6 +1,7 @@
 package com.ducktel.controller.home;
 
 import com.ducktel.dto.HomeResponseDTO;
+import com.ducktel.dto.ResponseDTO;
 import com.ducktel.service.HomeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -14,16 +15,16 @@ public class HomeController {
     private final HomeService homeService;
 
     @GetMapping("/api/home")
-    public ResponseEntity<HomeResponseDTO> getHomeData() {
+    public ResponseEntity<ResponseDTO<?>> getHomeData() {
 
         HomeResponseDTO homeData= homeService.getHomeData();
-        return ResponseEntity.ok(homeData);
+        return ResponseEntity.ok(new ResponseDTO<>(200, null, "Home Data 조회 성공", homeData));
     }
 
     @GetMapping("/api/sub-home/{category}")
-    public ResponseEntity<HomeResponseDTO> getSubHomeData(@PathVariable("category") String category) {
+    public ResponseEntity<ResponseDTO<?>> getSubHomeData(@PathVariable("category") String category) {
 
         HomeResponseDTO subHomeData = homeService.getSubHomeData(category);
-        return ResponseEntity.ok(subHomeData);
+        return ResponseEntity.ok(new ResponseDTO<>(200, null, "Sub-Home Data 조회 성공", subHomeData));
     }
 }
