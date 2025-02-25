@@ -4,6 +4,7 @@ import com.ducktel.dto.HomeResponseDTO;
 import com.ducktel.dto.ResponseDTO;
 import com.ducktel.service.HomeService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
+@Slf4j
 public class HomeController {
     private final HomeService homeService;
 
@@ -26,5 +28,12 @@ public class HomeController {
 
         HomeResponseDTO subHomeData = homeService.getSubHomeData(category);
         return ResponseEntity.ok(new ResponseDTO<>(200, null, "Sub-Home Data 조회 성공", subHomeData));
+    }
+    @GetMapping("/api/sub-home/{categorty}/{location}")
+    public ResponseEntity<ResponseDTO<?>> getLocationHomeData(@PathVariable("categorty") String category,
+                                                                 @PathVariable("location") String location) {
+        log.info("getLocationHomeData category: {}, location: {}", category, location);
+        HomeResponseDTO LocationHomeData = homeService.getLocationHomeData(category, location);
+        return ResponseEntity.ok(new ResponseDTO<>(200, null, "Location Home Data 조회 성공", LocationHomeData));
     }
 }

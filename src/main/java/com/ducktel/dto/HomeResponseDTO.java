@@ -19,4 +19,5 @@ public class HomeResponseDTO {
     private List<AccommodationDTO> favoriteAccommodations;
     private List<AccommodationDTO> seasonalAccommodations;
     private List<AccommodationDTO> categoryAccommodations;
+    private List<AccommodationDTO> locationAccommodations;
 }

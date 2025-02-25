@@ -10,4 +10,5 @@ public interface HomeService {
     HomeResponseDTO getHomeData();
     List<AccommodationDTO> convertToDTO(List<Accommodation> accommodations);
     HomeResponseDTO getSubHomeData(String category);
+    HomeResponseDTO getLocationHomeData(String category, String location);
 }

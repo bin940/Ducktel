@@ -10,4 +10,5 @@ public interface AccommodationRepository extends JpaRepository<Accommodation, Lo
     List<Accommodation> findAllByOrderByLikeCountDesc();
     List<Accommodation> findBySeason(String season);
     List<Accommodation> findByCategory(String category);
+    List<Accommodation> findByCategoryAndLocation(String category, String location);
  }

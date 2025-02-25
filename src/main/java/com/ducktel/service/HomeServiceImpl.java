@@ -39,6 +39,14 @@ public class HomeServiceImpl implements HomeService {
                 .build();
     }
 
+    @Override
+    public HomeResponseDTO getLocationHomeData(String category, String location) {
+        List<Accommodation> locationData = accommodationRepository.findByCategoryAndLocation(category, location);
+        return HomeResponseDTO.builder()
+                .locationAccommodations(convertToDTO(locationData))
+                .build();
+    }
+
     //Accommodation_image 조회 및 Entity -> DTO 변환
     public List<AccommodationDTO> convertToDTO(List<Accommodation> accommodations) {
         return accommodations.stream()
