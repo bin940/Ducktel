@@ -33,8 +33,10 @@ public class Room {
     private String serviceInfo;
 
     private String tag;
+    @Column(name = "total_rooms")
+    private int totalRooms;
 
     @ManyToOne
     @JoinColumn(name = "accommodation_id", nullable = false)
-    private Accommodation accommodation;
+    private Accommodation accommodationId;
 }

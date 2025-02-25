@@ -22,4 +22,5 @@ public class RoomDTO {
     private String serviceInfo;
     private String tag;
     private List<String> images;
+    private int availableRooms;
 }

@@ -17,8 +17,8 @@ public class BookingDetailDTO {
 
     private Long bookingId;
     private LocalDateTime createdAt;
-    private LocalDate startDate;
-    private LocalDate endDate;
+    private LocalDate checkIn;
+    private LocalDate checkOut;
     private int numberOfPerson;
     private boolean paymentCompleted;
 
@@ -28,8 +28,8 @@ public class BookingDetailDTO {
 
     public Booking updateBooikng(Booking booking) {
         return booking.toBuilder()
-                .startDate(this.startDate)
-                .endDate(this.endDate)
+                .checkIn(this.checkIn)
+                .checkOut(this.checkOut)
                 .numberOfPersons(this.numberOfPerson)
                 .build();
     }

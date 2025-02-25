@@ -1,7 +1,6 @@
 package com.ducktel.domain.entity;
 
 import com.ducktel.dto.BookingDetailDTO;
-import com.ducktel.dto.RoomDTO;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,7 +9,6 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Data
 @Entity
@@ -28,8 +26,8 @@ public class Booking {
     private LocalDateTime deletedAt;
     private LocalDateTime updatedAt;
 
-    @Column(name = "end_date")
-    private LocalDate endDate;
+    @Column(name = "check_out")
+    private LocalDate checkOut;
 
     @Column(name = "number_of_person")
     private int numberOfPersons;
@@ -37,8 +35,8 @@ public class Booking {
     @Column(name = "payment_completed")
     private boolean paymentCompleted;
 
-    @Column(name = "start_date")
-    private LocalDate startDate;
+    @Column(name = "check_in")
+    private LocalDate checkIn;
 
     @ManyToOne
     @JoinColumn(name = "room_id", nullable = false)
@@ -54,8 +52,8 @@ public class Booking {
 
     public BookingDetailDTO updateBooking(BookingDetailDTO bookingDTO){
        return bookingDTO.toBuilder()
-               .startDate(this.startDate)
-               .endDate(this.endDate)
+               .checkIn(this.checkIn)
+               .checkOut(this.checkOut)
                .numberOfPerson(this.numberOfPersons)
                .build();
     }
