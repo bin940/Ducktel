@@ -78,7 +78,6 @@ public class BookingServiceImpl implements BookingService {
                     .createdAt(booking.getCreatedAt())
                     .checkIn(booking.getCheckIn())
                     .checkOut(booking.getCheckOut())
-                    .numberOfPerson(booking.getNumberOfPersons())
                     .paymentCompleted(booking.isPaymentCompleted())
                     .accommodation(AccommodationDTO.builder()
                             .accommodationId(accommodation.getAccommodationId())

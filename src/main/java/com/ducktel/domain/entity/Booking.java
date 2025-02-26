@@ -22,25 +22,34 @@ public class Booking {
     @Column(name = "booking_id")
     private Long bookingId;
 
-    private LocalDateTime createdAt;
-    private LocalDateTime deletedAt;
-    private LocalDateTime updatedAt;
+    @Column(name = "CREATED_AT", nullable = false, updatable = false)
+    private LocalDateTime createdAt = LocalDateTime.now();
 
-    @Column(name = "check_out")
+    @Column(name = "UPDATED_AT", nullable = false)
+    private LocalDateTime updatedAt = LocalDateTime.now();;
+
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
+
+    @Column(name = "check_out", nullable = false)
     private LocalDate checkOut;
 
-    @Column(name = "number_of_person")
-    private int numberOfPersons;
-
-    @Column(name = "payment_completed")
+    @Column(name = "payment_completed", nullable = false)
     private boolean paymentCompleted;
 
-    @Column(name = "check_in")
+    @Column(name = "check_in", nullable = false)
     private LocalDate checkIn;
+
+    @Column(name = "name" , nullable = false)
+    private String name;
+
+    @Column(name = "phone_number", nullable = false)
+    private String phoneNumber;
 
     @ManyToOne
     @JoinColumn(name = "room_id", nullable = false)
     private Room room;
+
     @ManyToOne
     @JoinColumn(name= "accommodation_id", nullable = false)
     private Accommodation accommodation;
@@ -54,7 +63,6 @@ public class Booking {
        return bookingDTO.toBuilder()
                .checkIn(this.checkIn)
                .checkOut(this.checkOut)
-               .numberOfPerson(this.numberOfPersons)
                .build();
     }
 }

@@ -10,10 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -25,13 +22,11 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/login")
-    public ResponseEntity<ResponseDTO<Map<String, String>>> login(@Validated({CreateUser.class, Default.class}) @RequestBody LoginRequestDTO loginRequestDTO) {
-        log.info("로그인 시도: {}", loginRequestDTO.getUsername());
+    public ResponseEntity<ResponseDTO<Map<String, String>>> login(@Validated({CreateUser.class, Default.class})
+                                                                  @RequestBody LoginRequestDTO loginRequestDTO,
+                                                                  @CookieValue(value = "guestId", required = false) String guestId) {
 
-        if (loginRequestDTO.getUsername() == null || loginRequestDTO.getUsername().isEmpty() ||
-                loginRequestDTO.getPassword() == null || loginRequestDTO.getPassword().isEmpty()) {
-            throw new CustomException("INVALID_REQUEST", "아이디와 비밀번호를 입력해주세요.");
-        }
+        log.info("로그인 시도: {}", loginRequestDTO.getUsername());
 
         Map<String,String> token = authService.login(loginRequestDTO.getUsername(), loginRequestDTO.getPassword());
         String accessToken = token.get("accessToken");

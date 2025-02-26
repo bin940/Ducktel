@@ -12,6 +12,7 @@ public class RoomImage {
     @Column(name = "image_id")
     private Long imageId;
 
+    @Column(name = "image", nullable = false)
     private String image;
 
     @ManyToOne

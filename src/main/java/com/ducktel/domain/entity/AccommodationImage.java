@@ -16,5 +16,6 @@ public class AccommodationImage {
     @JoinColumn(name = "accommodation_id", nullable = false)
     private Accommodation accommodation;
 
+    @Column(name = "image", nullable = false)
     private String image;
 }

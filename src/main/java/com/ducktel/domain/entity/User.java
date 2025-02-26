@@ -22,26 +22,37 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
 
+    @Column(name = "username")
     private String username;
 
+    @Column(name = "password")
     private String password;
 
+    @Column(name = "email", nullable = false)
     private String email;
 
+    @Column(name = "role", nullable = false)
     private String role;
 
+    @Column(name = "phone_number")
     private String phoneNumber;
 
+    @Column(name = "created_at", nullable = false)
     private LocalDateTime created_at;
 
+    @Column(name = "updated_at", nullable = false)
     private LocalDateTime updated_at;
 
+    @Column(name = "deleted_at")
     private LocalDateTime deleted_at;
 
+    @Column(name = "social_id")
     private String socialId;
 
+    @Column(name = "provider")
     private String provider;
 
+    @Column(name = "name", nullable = false)
     private String name;
 
 

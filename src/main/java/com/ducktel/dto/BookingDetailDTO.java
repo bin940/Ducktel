@@ -30,7 +30,6 @@ public class BookingDetailDTO {
         return booking.toBuilder()
                 .checkIn(this.checkIn)
                 .checkOut(this.checkOut)
-                .numberOfPersons(this.numberOfPerson)
                 .build();
     }
 
