@@ -41,26 +41,26 @@ public class UserController {
     @GetMapping("/profile")
     public ResponseEntity<ResponseDTO<?>> getProfile(HttpServletRequest request){
         String token = JwtUtils.getTokenFromHeader(request.getHeader("Authorization"));
-        Long userId = JwtUtils.getUserIdFromToken(token);
+        String userId = JwtUtils.getUserIdFromToken(token);
         UserDTO user = userService.getProfile(userId);
         return ResponseEntity.ok(new ResponseDTO<>(200, null, "유저정보 조회 성공", user));
     }
     @PutMapping("/profile")
     public ResponseEntity<ResponseDTO<?>> updateProfile(HttpServletRequest request, @Validated({UpdateUser.class, Default.class}) @RequestBody UserDTO userData){
         String token = JwtUtils.getTokenFromHeader(request.getHeader("Authorization"));
-        Long userId = JwtUtils.getUserIdFromToken(token);
+        String userId = JwtUtils.getUserIdFromToken(token);
         UserDTO user = userService.updateProfile(userId, userData);
         return ResponseEntity.ok(new ResponseDTO<>(200, null, "유저정보 변경 성공", user));
     }
     @DeleteMapping("/profile/{userId}")
-    public ResponseEntity<String> deleteProfile(@PathVariable("userId") Long userId){
+    public ResponseEntity<String> deleteProfile(@PathVariable("userId") String userId){
         String result =userService.deleteProfile(userId);
         return ResponseEntity.ok(result);
     }
     @GetMapping("/book")
     public ResponseEntity<ResponseDTO<?>> getBookingDetail(HttpServletRequest request){
         String token = JwtUtils.getTokenFromHeader(request.getHeader("Authorization"));
-        Long userId = JwtUtils.getUserIdFromToken(token);
+        String userId = JwtUtils.getUserIdFromToken(token);
         List<BookingDetailDTO> bookingDetail = bookingService.getBookingDetail(userId);
         return ResponseEntity.ok(new ResponseDTO<>(200, null, "예약 조회 성공", bookingDetail));
     }
@@ -73,7 +73,7 @@ public class UserController {
     @DeleteMapping("/book/{bookingId}")
     public ResponseEntity<ResponseDTO<?>> deleteBooking(@PathVariable("bookingId") Long bookingId, HttpServletRequest request) {
         String token = JwtUtils.getTokenFromHeader(request.getHeader("Authorization"));
-        Long userId = JwtUtils.getUserIdFromToken(token);
+        String userId = JwtUtils.getUserIdFromToken(token);
 
         List<BookingDetailDTO> deleteBooking = bookingService.deleteBooking(userId, bookingId);
 
@@ -82,7 +82,7 @@ public class UserController {
     @PostMapping("/password-reset")
     public ResponseEntity<String> passWordReset(HttpServletRequest request, @RequestBody UserDTO user) {
         String token = JwtUtils.getTokenFromHeader(request.getHeader("Authorization"));
-        Long userId = JwtUtils.getUserIdFromToken(token);
+        String userId = JwtUtils.getUserIdFromToken(token);
         String newPassword = user.getPassword();
         String result =userService.passWordReset(userId, newPassword);
         return ResponseEntity.ok(result);

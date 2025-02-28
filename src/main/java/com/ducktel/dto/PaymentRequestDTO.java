@@ -11,7 +11,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PaymentRequestDTO {
-    private Long userId;
+    private String userId;
     private Long accommodationId;
     private Long roomId;
     private String name;

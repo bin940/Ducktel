@@ -69,14 +69,14 @@ public class JwtUtils {
         return new UsernamePasswordAuthenticationToken(principalDetailDTO, "", authorities);
     }
     // jwt userId 따로 사용
-    public static Long getUserIdFromToken(String token) {
+    public static String getUserIdFromToken(String token) {
         Claims claims = Jwts.parserBuilder()
                 .setSigningKey(SECRET_KEY.getBytes()) // 서명 검증
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
 
-        return ((Number) claims.get("userId")).longValue(); //  userId 추출
+        return claims.get("userId", String.class); //  userId 추출
     }
 
     public static Map<String, Object> validateToken(String token) {

@@ -17,6 +17,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -63,8 +64,9 @@ public class CustomOauth2UserService extends DefaultOAuth2UserService {
 
     public User saveSocialUser(String socialId, String name, String provider, String email) {
         log.info("신규 소셜 사용자 저장: socialId={}, name={}, provider={}, email={}", socialId, name, provider, email);
-
+        String userIdUUID = UUID.randomUUID().toString();
         User user = new User();
+        user.setUserId(userIdUUID);
         user.setSocialId(socialId);
         user.setName(name);
         user.setProvider(provider);

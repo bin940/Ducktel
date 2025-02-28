@@ -11,7 +11,7 @@ import java.util.List;
 
 public interface BookingRepository extends JpaRepository<Booking, Long> {
 
-    List<Booking> findByUser_UserId(Long userId);
+    List<Booking> findByUser_UserId(String userId);
     @Query("SELECT b.room.roomId, COUNT(b) " +
             "FROM Booking b " +
             "WHERE b.room.roomId IN :roomIds " +

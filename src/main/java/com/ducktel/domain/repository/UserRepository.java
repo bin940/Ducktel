@@ -9,12 +9,12 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
 
-public interface UserRepository extends JpaRepository<User, Long> {
+public interface UserRepository extends JpaRepository<User, String> {
     Optional<User> findByUsername(String username);
     boolean existsByUsername(String username);
     Optional<User> findBySocialId(@Param("socialId") String socialId);
     @Transactional
     @Modifying
     @Query("UPDATE User u SET u.password = :password WHERE u.userId = :userId")
-    int updatePassword(@Param("userId") Long userId, @Param("password") String newPassword);
+    int updatePassword(@Param("userId") String userId, @Param("password") String newPassword);
 }

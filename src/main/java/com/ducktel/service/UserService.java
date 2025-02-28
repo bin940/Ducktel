@@ -4,8 +4,8 @@ import com.ducktel.dto.UserDTO;
 
 public interface UserService {
     String registerUser(UserDTO userDTO);
-    UserDTO getProfile(Long userId);
-    UserDTO updateProfile(Long userId, UserDTO userData);
-    String deleteProfile(Long userId);
-    String passWordReset(Long userId, String newPassword);
+    UserDTO getProfile(String userId);
+    UserDTO updateProfile(String userId, UserDTO userData);
+    String deleteProfile(String userId);
+    String passWordReset(String userId, String newPassword);
 }

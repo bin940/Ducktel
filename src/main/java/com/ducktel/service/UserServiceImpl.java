@@ -28,7 +28,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDTO getProfile(Long userId) {
+    public UserDTO getProfile(String userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UsernameNotFoundException("등록되지 않은 사용자입니다: " + userId));
 
@@ -36,7 +36,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDTO updateProfile(Long userId, UserDTO userData) {
+    public UserDTO updateProfile(String userId, UserDTO userData) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UsernameNotFoundException("등록되지 않은 사용자입니다: " + userId));
        user = userData.updateUser(user);
@@ -47,7 +47,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String deleteProfile(Long userId) {
+    public String deleteProfile(String userId) {
         if (!userRepository.existsById(userId)) {
             throw new CustomException("NOT FOUND", "유저를 찾을 수 없습니다. ID: " + userId);
         }
@@ -56,7 +56,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String passWordReset(Long userId, String newPassword) {
+    public String passWordReset(String userId, String newPassword) {
         int insert =userRepository.updatePassword(userId, passwordEncoder.encode(newPassword));
         log.info(insert + "개가 변경 되었습니다.");
         return "비밀번호가 변경 되었습니다.";

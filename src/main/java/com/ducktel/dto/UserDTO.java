@@ -15,6 +15,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.UUID;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -39,7 +41,9 @@ public class UserDTO {
     private String name;
 
     public User createUser(PasswordEncoder passwordEncoder) {
+        String userIdUUID = UUID.randomUUID().toString();
         User user = new User();
+        user.setUserId(userIdUUID);
         user.setUsername(this.username);
         user.setPassword(passwordEncoder.encode(this.password));
         user.setEmail(this.email);
