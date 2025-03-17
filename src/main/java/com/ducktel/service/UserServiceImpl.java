@@ -45,7 +45,7 @@ public class UserServiceImpl implements UserService {
 
         return updatedUser.updateUser(userData);
     }
-
+    //user return enum 상수로 관리!!
     @Override
     public String deleteProfile(String userId) {
         if (!userRepository.existsById(userId)) {

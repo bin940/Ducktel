@@ -6,3 +6,4 @@ public enum PaymentStatus {
     FAILED,   // 결제 실패
     CANCELED  // 결제 취소
 }
+

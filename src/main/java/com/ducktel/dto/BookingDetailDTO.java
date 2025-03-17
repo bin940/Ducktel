@@ -19,7 +19,6 @@ public class BookingDetailDTO {
     private LocalDateTime createdAt;
     private LocalDate checkIn;
     private LocalDate checkOut;
-    private int numberOfPerson;
     private boolean paymentCompleted;
 
     private AccommodationDTO accommodation;

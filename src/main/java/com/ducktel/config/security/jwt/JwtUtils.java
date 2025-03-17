@@ -2,6 +2,7 @@ package com.ducktel.config.security.jwt;
 
 import com.ducktel.domain.entity.User;
 import com.ducktel.dto.PrincipalDetailDTO;
+import com.ducktel.exception.CustomException;
 import com.ducktel.exception.CustomExpiredJwtException;
 import com.ducktel.exception.CustomJwtException;
 import io.jsonwebtoken.Claims;
@@ -70,13 +71,24 @@ public class JwtUtils {
     }
     // jwt userId 따로 사용
     public static String getUserIdFromToken(String token) {
-        Claims claims = Jwts.parserBuilder()
-                .setSigningKey(SECRET_KEY.getBytes()) // 서명 검증
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-
-        return claims.get("userId", String.class); //  userId 추출
+        if (token == null) {
+            throw new CustomException("INVALID_TOKEN", "토큰이 null입니다.");
+        }
+        try {
+            Claims claims = Jwts.parserBuilder()
+                    .setSigningKey(SECRET_KEY.getBytes())
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+            String userId = claims.get("userId", String.class);
+            System.out.println("JwtUtils - 추출된 userId: " + userId); // 디버깅
+            if (userId == null) {
+                throw new CustomException("INVALID_TOKEN", "토큰에 userId가 없습니다.");
+            }
+            return userId;
+        } catch (Exception e) {
+            throw new CustomException("INVALID_TOKEN", "토큰 파싱 실패: " + e.getMessage());
+        }
     }
 
     public static Map<String, Object> validateToken(String token) {

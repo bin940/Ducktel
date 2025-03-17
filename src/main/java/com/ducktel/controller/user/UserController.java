@@ -28,15 +28,11 @@ public class UserController {
     private final BookingService bookingService;
 
     @PostMapping("/register")
-    public ResponseEntity<String> registerUser(@Valid @RequestBody UserDTO userDTO) {
+    public ResponseEntity<ResponseDTO<?>> registerUser(@Valid @RequestBody UserDTO userDTO) {
         log.info("회원가입 시도: {}", userDTO.getUsername());
-        try {
+
             String UserName =userService.registerUser(userDTO);
-            return ResponseEntity.ok(UserName+"님 회원가입을 축하합니다.");
-        } catch (Exception e) {
-            log.error("회원가입 실패: {}",e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("회원가입 실패!" + e.getMessage());
-        }
+            return ResponseEntity.ok(new ResponseDTO<>(200, null, "회원가입 성공", UserName));
     }
     @GetMapping("/profile")
     public ResponseEntity<ResponseDTO<?>> getProfile(HttpServletRequest request){

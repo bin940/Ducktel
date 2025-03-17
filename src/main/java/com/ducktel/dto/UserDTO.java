@@ -58,10 +58,6 @@ public class UserDTO {
         this.phoneNumber = phoneNumber;
         this.name = name;
     }
-    public UserDTO( String email, String phoneNumber) {
-        this.email = email;
-        this.phoneNumber = phoneNumber;
-    }
     public User updateUser(User user) {
        user.setPhoneNumber(this.phoneNumber);
        user.setEmail(this.email);

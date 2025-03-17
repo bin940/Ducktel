@@ -23,8 +23,7 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<ResponseDTO<Map<String, String>>> login(@Validated({CreateUser.class, Default.class})
-                                                                  @RequestBody LoginRequestDTO loginRequestDTO,
-                                                                  @CookieValue(value = "guestId", required = false) String guestId) {
+                                                                  @RequestBody LoginRequestDTO loginRequestDTO) {
 
         log.info("로그인 시도: {}", loginRequestDTO.getUsername());
 
