@@ -25,60 +25,9 @@ import java.util.Optional;
 @Slf4j
 public class AuthService {
 
-    private final AuthenticationManager authenticationManager;
     private final RefreshTokenRepository refreshTokenRepository;
 
-    public Map<String, String> login(String username, String password) {
-        try {
-            // Spring Security를 이용해 사용자 인증
-            Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(username, password)
-            );
 
-            // 인증된 사용자 정보 가져오기
-            PrincipalDetailDTO principal = (PrincipalDetailDTO) authentication.getPrincipal();
-
-            // SecurityContext에 인증 정보 저장
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-
-
-            //JWT 토큰 생성
-            String accessToken = JwtUtils.generateToken(
-                    Map.of(
-                            "userId", principal.getUser().getUserId(),
-                            "username", principal.getUsername(),
-                            "roles", String.join(",", principal.getAuthorities().stream()
-                                    .map(GrantedAuthority::getAuthority)
-                                    .toList()) // 권한을 문자열로 변환
-                    ),
-                    60 // 유효 시간: 60분
-            );
-
-            String refreshToken = JwtUtils.generateToken(
-                    Map.of(
-                            "userId", principal.getUser().getUserId(),
-                            "username", principal.getUsername(),
-                            "type", "refresh"
-                    ),
-                    60 * 24 * 7 // 7일
-            );
-
-            RefreshToken refreshEntity = new RefreshToken();
-            refreshEntity.setUserId(principal.getUser().getUserId());
-            refreshEntity.setToken(refreshToken);
-            refreshEntity.setExpiryDate(LocalDateTime.now().plusDays(7));
-            refreshTokenRepository.save(refreshEntity);
-
-            return Map.of("accessToken", accessToken, "refreshToken", refreshToken, "loginType", "LOCAL");
-
-        } catch (BadCredentialsException e) {
-            log.error("BadCredentialsException 발생 - 아이디 또는 비밀번호가 틀림!");
-            throw new CustomException("LOGIN_FAILED", "아이디 또는 비밀번호가 잘못되었습니다.");
-        } catch (AuthenticationException e) {
-            log.error("AuthenticationException 발생 - " + e.getMessage());
-            throw new CustomException("LOGIN_FAILED", "로그인에 실패하였습니다.");
-        }
-    }
     public Map<String, String> refresh(String refreshToken) {
         // DB에서 리프레시 토큰 확인
         Optional<RefreshToken> storedToken = refreshTokenRepository.findByToken(refreshToken);

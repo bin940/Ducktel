@@ -5,15 +5,13 @@ import com.ducktel.domain.entity.RefreshToken;
 import com.ducktel.domain.entity.User;
 import com.ducktel.domain.repository.RefreshTokenRepository;
 import com.ducktel.dto.PrincipalDetailDTO;
-import com.ducktel.dto.ResponseDTO;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -22,7 +20,6 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
     private final RefreshTokenRepository refreshTokenRepository;
-    private final ObjectMapper objectMapper;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -43,14 +40,12 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
         String loginType = "OAUTH2_" + user.getProvider().toUpperCase();
 
-        Map<String, String> responseMap = Map.of(
-                "accessToken", accessToken,
-                "refreshToken", refreshToken,
-                "loginType", loginType
-        );
+        String redirectUrl = "http://localhost:8081/login" +
+                "?accessToken=" + accessToken +
+                "&refreshToken=" + refreshToken +
+                "&loginType=" + loginType;
 
-        ResponseDTO<Map<String, String>> responseDTO = new ResponseDTO<>(200, null, "OAuth2 로그인 성공", responseMap);
-        sendJsonResponse(response, responseDTO);
+        response.sendRedirect(redirectUrl);
     }
 
     private void saveRefreshToken(String userId, String refreshToken) {
@@ -60,11 +55,4 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         refreshEntity.setExpiryDate(LocalDateTime.now().plusDays(7));
         refreshTokenRepository.save(refreshEntity);
     }
-
-    private void sendJsonResponse(HttpServletResponse response, ResponseDTO<?> responseDTO) throws IOException {
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-        response.getWriter().write(objectMapper.writeValueAsString(responseDTO));
-    }
 }
-
