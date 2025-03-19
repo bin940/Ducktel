@@ -27,7 +27,6 @@ public class AuthService {
 
     private final RefreshTokenRepository refreshTokenRepository;
 
-
     public Map<String, String> refresh(String refreshToken) {
         // DB에서 리프레시 토큰 확인
         Optional<RefreshToken> storedToken = refreshTokenRepository.findByToken(refreshToken);
@@ -49,4 +48,8 @@ public class AuthService {
         return Map.of("accessToken", newAccessToken);
     }
 
+    public void logout(String refreshToken) {
+        Optional<RefreshToken> storedToken = refreshTokenRepository.findByToken(refreshToken);
+        storedToken.ifPresent(refreshTokenRepository::delete);
+    }
 }
