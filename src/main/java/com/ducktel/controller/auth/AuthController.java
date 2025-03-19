@@ -8,6 +8,7 @@ import com.ducktel.validation.CreateUser;
 import jakarta.validation.groups.Default;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -34,4 +35,11 @@ public class AuthController {
         return ResponseEntity.ok(new ResponseDTO<>(200, null, "로그인 성공", Map.of("accessToken", accessToken,
                 "refreshToken", refreshToken)));
     }
+    @PostMapping("/refresh")
+    public ResponseEntity<?> refresh(@RequestBody Map<String, String> request) {
+        Map<String, String> response = authService.refresh(request.get("refreshToken"));
+        return ResponseEntity.ok(new ResponseDTO<>(200, null, "토큰 갱신 성공", response));
+    }
 }
+
+

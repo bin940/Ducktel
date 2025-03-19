@@ -90,6 +90,20 @@ public class JwtUtils {
             throw new CustomException("INVALID_TOKEN", "토큰 파싱 실패: " + e.getMessage());
         }
     }
+    public static String getTokenType(String token) {
+        try {
+            Map<String, Object> claims = validateToken(token);
+            String type = (String) claims.get("type");
+            if (type == null) {
+                throw new CustomException("INVALID_TOKEN", "토큰에 type 정보가 없습니다.");
+            }
+            return type;
+        } catch (CustomExpiredJwtException | CustomJwtException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new CustomException("INVALID_TOKEN", "토큰 파싱 실패: " + e.getMessage());
+        }
+    }
 
     public static Map<String, Object> validateToken(String token) {
         try {

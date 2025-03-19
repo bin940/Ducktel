@@ -1,6 +1,8 @@
 package com.ducktel.config.security.service;
 
 import com.ducktel.config.security.jwt.JwtUtils;
+import com.ducktel.domain.entity.RefreshToken;
+import com.ducktel.domain.repository.RefreshTokenRepository;
 import com.ducktel.dto.PrincipalDetailDTO;
 import com.ducktel.exception.CustomException;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +16,9 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -22,6 +26,7 @@ import java.util.Map;
 public class AuthService {
 
     private final AuthenticationManager authenticationManager;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     public Map<String, String> login(String username, String password) {
         try {
@@ -58,6 +63,12 @@ public class AuthService {
                     60 * 24 * 7 // 7일
             );
 
+            RefreshToken refreshEntity = new RefreshToken();
+            refreshEntity.setUserId(principal.getUser().getUserId());
+            refreshEntity.setToken(refreshToken);
+            refreshEntity.setExpiryDate(LocalDateTime.now().plusDays(7));
+            refreshTokenRepository.save(refreshEntity);
+
             return Map.of("accessToken", accessToken, "refreshToken", refreshToken);
 
         } catch (BadCredentialsException e) {
@@ -68,4 +79,25 @@ public class AuthService {
             throw new CustomException("LOGIN_FAILED", "로그인에 실패하였습니다.");
         }
     }
+    public Map<String, String> refresh(String refreshToken) {
+        // DB에서 리프레시 토큰 확인
+        Optional<RefreshToken> storedToken = refreshTokenRepository.findByToken(refreshToken);
+        if (storedToken.isEmpty() || JwtUtils.isExpired(refreshToken) || !"refresh".equals(JwtUtils.getTokenType(refreshToken))) {
+            throw new CustomException("INVALID_REFRESH_TOKEN", "유효하지 않은 리프레시 토큰");
+        }
+
+        // 토큰에서 사용자 정보 추출
+        Map<String, Object> claims = JwtUtils.validateToken(refreshToken);
+        String userId = (String) claims.get("userId");
+        String username = (String) claims.get("username");
+
+        // 새 accessToken 생성
+        String newAccessToken = JwtUtils.generateToken(
+                Map.of("userId", userId, "username", username, "roles", "ROLE_USER", "type", "access"), // roles는 필요 시 DB에서
+                60
+        );
+
+        return Map.of("accessToken", newAccessToken);
+    }
+
 }
