@@ -22,19 +22,7 @@ import java.util.Map;
 public class AuthController {
     private final AuthService authService;
 
-    @PostMapping("/login")
-    public ResponseEntity<ResponseDTO<Map<String, String>>> login(@Validated({CreateUser.class, Default.class})
-                                                                  @RequestBody LoginRequestDTO loginRequestDTO) {
 
-        log.info("로그인 시도: {}", loginRequestDTO.getUsername());
-
-        Map<String,String> token = authService.login(loginRequestDTO.getUsername(), loginRequestDTO.getPassword());
-        String accessToken = token.get("accessToken");
-        String refreshToken = token.get("refreshToken");
-
-        return ResponseEntity.ok(new ResponseDTO<>(200, null, "로그인 성공", Map.of("accessToken", accessToken,
-                "refreshToken", refreshToken)));
-    }
     @PostMapping("/refresh")
     public ResponseEntity<?> refresh(@RequestBody Map<String, String> request) {
         Map<String, String> response = authService.refresh(request.get("refreshToken"));

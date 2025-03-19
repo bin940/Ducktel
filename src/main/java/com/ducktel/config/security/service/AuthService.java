@@ -69,7 +69,7 @@ public class AuthService {
             refreshEntity.setExpiryDate(LocalDateTime.now().plusDays(7));
             refreshTokenRepository.save(refreshEntity);
 
-            return Map.of("accessToken", accessToken, "refreshToken", refreshToken);
+            return Map.of("accessToken", accessToken, "refreshToken", refreshToken, "loginType", "LOCAL");
 
         } catch (BadCredentialsException e) {
             log.error("BadCredentialsException 발생 - 아이디 또는 비밀번호가 틀림!");

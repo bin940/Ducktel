@@ -1,6 +1,7 @@
 package com.ducktel.config.security.config;
 
-import com.ducktel.config.security.hadler.CommonLoginSuccessHandler;
+import com.ducktel.config.security.hadler.FormLoginSuccessHandler;
+import com.ducktel.config.security.hadler.OAuth2LoginSuccessHandler;
 import com.ducktel.config.security.jwt.JwtVerifyFilter;
 import com.ducktel.config.security.service.CustomOauth2UserService;
 import com.ducktel.config.security.service.CustomUserDetailsService;
@@ -36,7 +37,8 @@ import java.util.List;
 public class SecurityConfig {
     private final CustomUserDetailsService userDetailsService;
     private final CustomOauth2UserService customOAuth2UserService;
-    private final CommonLoginSuccessHandler commonLoginSuccessHandler;
+    private final FormLoginSuccessHandler formLoginSuccessHandler;
+    private final OAuth2LoginSuccessHandler oauth2LoginSuccessHandler;
 
     //password BCrypt으로 변환
     @Bean
@@ -110,21 +112,27 @@ public class SecurityConfig {
                 .requestMatchers("/api/places/**").permitAll()
                 .anyRequest().authenticated() // 나머지 요청은 인증 필요
         );
+        // 일반 로그인 설정
+        http.formLogin(form -> form
+                .loginProcessingUrl("/api/auth/login")
+                .successHandler(formLoginSuccessHandler)
+                .failureHandler((request, response, exception) -> {
+                    log.error("일반 로그인 실패: {}", exception.getMessage());
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    response.setContentType("application/json");
+                    response.getWriter().write("{\"error\": \"Login Failed\"}");
+                })
+        );
         // OAuth2 설정
         http.oauth2Login(oauth2 -> oauth2
-                .authorizationEndpoint(auth ->
-                        auth.baseUri("/oauth2/authorization"))
-                .redirectionEndpoint(redir ->
-                        redir.baseUri("/login/oauth2/code/*"))
-                .userInfoEndpoint(userInfo -> userInfo
-                        .userService(customOAuth2UserService) // 사용자 정보 조회 서비스
-
-                )
-                .successHandler(commonLoginSuccessHandler)  // 로그인 성공 시 핸들러
+                .authorizationEndpoint(auth -> auth.baseUri("/oauth2/authorization"))
+                .redirectionEndpoint(redir -> redir.baseUri("/login/oauth2/code/*"))
+                .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
+                .successHandler(oauth2LoginSuccessHandler)
                 .failureHandler((request, response, exception) -> {
                     log.error("OAuth2 로그인 실패: {}", exception.getMessage());
-                    response.setContentType("application/json");
                     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    response.setContentType("application/json");
                     response.getWriter().write("{\"error\": \"OAuth2 Login Failed\"}");
                 })
         );
