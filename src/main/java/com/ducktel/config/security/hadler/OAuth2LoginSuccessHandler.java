@@ -38,7 +38,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
         saveRefreshToken(user.getUserId(), refreshToken);
 
-        String loginType = "OAUTH2_" + user.getProvider().toUpperCase();
+        String loginType = user.getProvider().toUpperCase();
 
         String redirectUrl = "http://localhost:8081/login" +
                 "?accessToken=" + accessToken +

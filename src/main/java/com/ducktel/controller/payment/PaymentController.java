@@ -6,6 +6,7 @@ import com.ducktel.dto.PaymentResponseDTO;
 import com.ducktel.dto.ResponseDTO;
 import com.ducktel.service.PaymentService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,7 +22,7 @@ public class PaymentController {
     private final PaymentService paymentService;
 
     @PostMapping("/create")
-    public ResponseEntity<?> createPayment(HttpServletRequest request, @RequestBody PaymentRequestDTO paymentRequestDTO) {
+    public ResponseEntity<?> createPayment(HttpServletRequest request,@Valid  @RequestBody PaymentRequestDTO paymentRequestDTO) {
         String token = JwtUtils.getTokenFromHeader(request.getHeader("Authorization"));
         String userId = JwtUtils.getUserIdFromToken(token);
         paymentRequestDTO.setUserId(userId);

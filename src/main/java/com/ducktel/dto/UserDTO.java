@@ -36,7 +36,7 @@ public class UserDTO {
     @NotBlank(message = "전화번호를 입력해주세요.", groups = {CreateUser.class, UpdateUser.class})
     @Email(message = "이메일 형식에 맞게 입력해주세요.")
     private String email;
-    @NotBlank(message = "아이디를 입력해주세요.", groups = {CreateUser.class, UpdateUser.class})
+    @NotBlank(message = "이름을 입력해주세요.", groups = {CreateUser.class, UpdateUser.class})
     @Size(min =2, max =8, message= "이름은 2자 이상 8자 이아로 입력해주세요.")
     private String name;
 

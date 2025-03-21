@@ -17,6 +17,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -49,12 +50,30 @@ public class CustomOauth2UserService extends DefaultOAuth2UserService {
 
         // 사용자 정보 조회 또는 저장
         User user = userRepository.findBySocialId(socialUserInfo.getSocialId())
-                .orElseGet(() -> saveSocialUser(
-                        socialUserInfo.getSocialId(),
-                        socialUserInfo.getName(),
-                        socialUserInfo.getProvider(),
-                        socialUserInfo.getEmail()
-                ));
+                .orElseGet(() -> {
+                    Optional<User> userByEmail = userRepository.findByEmail(socialUserInfo.getEmail());
+
+                    if (userByEmail.isPresent()) {
+                        User existingUser = userByEmail.get();
+                        if (existingUser.getSocialId() == null) {
+                            existingUser.setSocialId(socialUserInfo.getSocialId());
+                        }
+                        if (existingUser.getProvider() == null) {
+                            existingUser.setProvider(socialUserInfo.getProvider());
+                        }
+
+                        return userRepository.save(existingUser);
+                    }
+
+                    return saveSocialUser(
+                            socialUserInfo.getSocialId(),
+                            socialUserInfo.getName(),
+                            socialUserInfo.getProvider(),
+                            socialUserInfo.getEmail()
+                    );
+                });
+
+
 
         log.info("OAuth2 로그인 사용자 정보: name={}, socialId={}, email={}, role={}",
                 user.getName(), user.getSocialId(), user.getEmail(), user.getRole());
