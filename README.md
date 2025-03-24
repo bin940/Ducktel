@@ -6,29 +6,29 @@ OAuth2 로그인, JWT 인증, 숙소/객실 관리, 예약 및 결제 기능 등
 ---
 
 ## 📁 프로젝트 구조
+```
 ducktel/
-├── config/              # 설정 관련 패키지
-│   ├── security/       # Spring Security 및 JWT 설정
-│   │   ├── handler/   # 인증/인가 핸들러
-│   │   └── jwt/       # JWT 관련 설정 및 필터
-│   └── config/        # 기타 설정 클래스
-├── controller/         # API 컨트롤러
-│   ├── auth/          # 인증 관련 컨트롤러
-│   ├── home/          # 홈 화면 관련 컨트롤러
-│   ├── payment/       # 결제 관련 컨트롤러
-│   ├── place/         # 숙소/객실 관련 컨트롤러
-│   └── user/          # 사용자 관련 컨트롤러
-├── domain/            # 도메인 관련 패키지
-│   ├── entity/        # 도메인 모델 (User, Room, Booking 등)
-│   ├── enums/         # 열거형 클래스
-│   ├── repository/    # JPA Repository 계층
-│   └── dto/           # 데이터 전송 객체 (DTO)
-├── exception/         # 예외 처리 관련 패키지
-├── service/           # 비즈니스 로직 서비스
-├── validation/        # 유효성 검사 관련 패키지
-└── DucktelApplication.java  # 메인 애플리케이션 클래스
-
-
+├── config/                      # 설정 관련 패키지
+│   ├── security/               # Spring Security 및 JWT 설정
+│   │   ├── handler/            # 인증/인가 핸들러
+│   │   └── jwt/                # JWT 관련 설정 및 필터
+│   └── config/                 # 기타 설정 클래스
+├── controller/                 # API 컨트롤러
+│   ├── auth/                   # 인증 관련 컨트롤러
+│   ├── home/                   # 홈 화면 관련 컨트롤러
+│   ├── payment/                # 결제 관련 컨트롤러
+│   ├── place/                  # 숙소/객실 관련 컨트롤러
+│   └── user/                   # 사용자 관련 컨트롤러
+├── domain/                     # 도메인 관련 패키지
+│   ├── entity/                 # 도메인 모델 (User, Room, Booking 등)
+│   ├── enums/                  # 열거형 클래스
+│   ├── repository/             # JPA Repository 계층
+│   └── dto/                    # 데이터 전송 객체 (DTO)
+├── exception/                  # 예외 처리 관련 패키지
+├── service/                    # 비즈니스 로직 서비스
+├── validation/                 # 유효성 검사 관련 패키지
+└── DucktelApplication.java     # 메인 애플리케이션 클래스
+```
 
 ---
 
