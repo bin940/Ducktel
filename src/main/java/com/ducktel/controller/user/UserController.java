@@ -5,6 +5,7 @@ import com.ducktel.dto.BookingDetailDTO;
 import com.ducktel.dto.ResponseDTO;
 import com.ducktel.dto.UserDTO;
 import com.ducktel.service.BookingService;
+import com.ducktel.service.JwtService;
 import com.ducktel.service.UserService;
 import com.ducktel.validation.UpdateUser;
 import jakarta.servlet.http.HttpServletRequest;
@@ -26,6 +27,7 @@ import java.util.List;
 public class UserController {
     private final UserService userService;
     private final BookingService bookingService;
+    private final JwtService jwtService;
 
     @PostMapping("/register")
     public ResponseEntity<ResponseDTO<?>> registerUser(@Valid @RequestBody UserDTO userDTO) {
@@ -36,15 +38,15 @@ public class UserController {
     }
     @GetMapping("/profile")
     public ResponseEntity<ResponseDTO<?>> getProfile(HttpServletRequest request){
-        String token = JwtUtils.getTokenFromHeader(request.getHeader("Authorization"));
-        String userId = JwtUtils.getUserIdFromToken(token);
+        String token = jwtService.getTokenFromHeader(request.getHeader("Authorization"));
+        String userId = jwtService.getUserIdFromToken(token);
         UserDTO user = userService.getProfile(userId);
         return ResponseEntity.ok(new ResponseDTO<>(200, null, "유저정보 조회 성공", user));
     }
     @PutMapping("/profile")
     public ResponseEntity<ResponseDTO<?>> updateProfile(HttpServletRequest request, @Validated({UpdateUser.class, Default.class}) @RequestBody UserDTO userData){
-        String token = JwtUtils.getTokenFromHeader(request.getHeader("Authorization"));
-        String userId = JwtUtils.getUserIdFromToken(token);
+        String token = jwtService.getTokenFromHeader(request.getHeader("Authorization"));
+        String userId = jwtService.getUserIdFromToken(token);
         UserDTO user = userService.updateProfile(userId, userData);
         return ResponseEntity.ok(new ResponseDTO<>(200, null, "유저정보 변경 성공", user));
     }
@@ -55,8 +57,8 @@ public class UserController {
     }
     @GetMapping("/book")
     public ResponseEntity<ResponseDTO<?>> getBookingDetail(HttpServletRequest request){
-        String token = JwtUtils.getTokenFromHeader(request.getHeader("Authorization"));
-        String userId = JwtUtils.getUserIdFromToken(token);
+        String token = jwtService.getTokenFromHeader(request.getHeader("Authorization"));
+        String userId = jwtService.getUserIdFromToken(token);
         List<BookingDetailDTO> bookingDetail = bookingService.getBookingDetail(userId);
         return ResponseEntity.ok(new ResponseDTO<>(200, null, "예약 조회 성공", bookingDetail));
     }
@@ -68,8 +70,8 @@ public class UserController {
     }
     @DeleteMapping("/book/{bookingId}")
     public ResponseEntity<ResponseDTO<?>> deleteBooking(@PathVariable("bookingId") Long bookingId, HttpServletRequest request) {
-        String token = JwtUtils.getTokenFromHeader(request.getHeader("Authorization"));
-        String userId = JwtUtils.getUserIdFromToken(token);
+        String token = jwtService.getTokenFromHeader(request.getHeader("Authorization"));
+        String userId = jwtService.getUserIdFromToken(token);
 
         List<BookingDetailDTO> deleteBooking = bookingService.deleteBooking(userId, bookingId);
 
@@ -77,8 +79,8 @@ public class UserController {
     }
     @PostMapping("/password-reset")
     public ResponseEntity<String> passWordReset(HttpServletRequest request, @RequestBody UserDTO user) {
-        String token = JwtUtils.getTokenFromHeader(request.getHeader("Authorization"));
-        String userId = JwtUtils.getUserIdFromToken(token);
+        String token = jwtService.getTokenFromHeader(request.getHeader("Authorization"));
+        String userId = jwtService.getUserIdFromToken(token);
         String newPassword = user.getPassword();
         String result =userService.passWordReset(userId, newPassword);
         return ResponseEntity.ok(result);

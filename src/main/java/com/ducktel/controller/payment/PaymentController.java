@@ -1,9 +1,9 @@
 package com.ducktel.controller.payment;
 
-import com.ducktel.config.security.jwt.JwtUtils;
 import com.ducktel.dto.PaymentRequestDTO;
 import com.ducktel.dto.PaymentResponseDTO;
 import com.ducktel.dto.ResponseDTO;
+import com.ducktel.service.JwtService;
 import com.ducktel.service.PaymentService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -20,11 +20,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class PaymentController {
 
     private final PaymentService paymentService;
+    private final JwtService jwtService;
 
     @PostMapping("/create")
     public ResponseEntity<?> createPayment(HttpServletRequest request,@Valid  @RequestBody PaymentRequestDTO paymentRequestDTO) {
-        String token = JwtUtils.getTokenFromHeader(request.getHeader("Authorization"));
-        String userId = JwtUtils.getUserIdFromToken(token);
+        String token = jwtService.getTokenFromHeader(request.getHeader("Authorization"));
+        String userId = jwtService.getUserIdFromToken(token);
         paymentRequestDTO.setUserId(userId);
         PaymentResponseDTO paymentRetrieve =  paymentService.processPayment(paymentRequestDTO);
         return ResponseEntity.ok(new ResponseDTO<>(200, null, "예약 성공", paymentRetrieve));
