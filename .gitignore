@@ -1,13 +1,13 @@
-backend/build/
-backend/.gradle/
+DuckBack/build/
+DuckBack/.gradle/
 *.class
 *.jar
 *.war
 *.log
 
-frontend/node_modules/
-frontend/dist/
-frontend/.env
+duckfront/node_modules/
+duckfront/dist/
+duckfront/.env
 
 *.iml
 .idea/
