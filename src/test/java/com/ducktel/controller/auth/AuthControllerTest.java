@@ -52,6 +52,7 @@ class AuthControllerTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value(200))
+                .andExpect(jsonPath("$.errorCode").doesNotExist())
                 .andExpect(jsonPath("$.message").value("토큰 갱신 성공"))
                 .andExpect(jsonPath("$.data.accessToken").value("newAccessToken"));
     }
@@ -70,7 +71,8 @@ class AuthControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value(400))
                 .andExpect(jsonPath("$.errorCode").value("INVALID_REFRESH_TOKEN"))
-                .andExpect(jsonPath("$.message").value("유효하지 않은 리프레시 토큰"));
+                .andExpect(jsonPath("$.message").value("유효하지 않은 리프레시 토큰"))
+                .andExpect(jsonPath("$.data").doesNotExist());
 
 
     }
@@ -90,6 +92,7 @@ class AuthControllerTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value(200))
+                .andExpect(jsonPath("$.errorCode").doesNotExist())
                 .andExpect(jsonPath("$.message").value("로그아웃 성공"))
                 .andExpect(jsonPath("$.data").doesNotExist());
     }
@@ -105,6 +108,7 @@ class AuthControllerTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value(200))
+                .andExpect(jsonPath("$.errorCode").doesNotExist())
                 .andExpect(jsonPath("$.message").value("소셜 로그아웃 URL 반환"))
                 .andExpect(jsonPath("$.data").value("https://accounts.google.com/logout"));
     }
@@ -117,8 +121,10 @@ class AuthControllerTest {
         mockMvc.perform(post("/api/auth/logout")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isBadRequest())
+                .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value(400))
-                .andExpect(jsonPath("$.message").value("잘못된 요청"));
+                .andExpect(jsonPath("$.errorCode").value("INVALID_REQUEST"))
+                .andExpect(jsonPath("$.message").value("잘못된 요청"))
+                .andExpect(jsonPath("$.data").doesNotExist());
     }
 }

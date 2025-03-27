@@ -35,7 +35,7 @@ public class AuthController {
         String loginType = request.get("loginType");
 
         if (refreshToken == null || loginType == null) {
-            return ResponseEntity.badRequest().body(new ResponseDTO<>(400, "INVALID_REQUEST", "잘못된 요청", null));
+            return ResponseEntity.ok(new ResponseDTO<>(400, "INVALID_REQUEST", "잘못된 요청", null));
         }
 
         if ("LOCAL".equalsIgnoreCase(loginType)) {

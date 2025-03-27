@@ -33,13 +33,18 @@ public class UserController {
     public ResponseEntity<ResponseDTO<?>> registerUser(@Valid @RequestBody UserDTO userDTO) {
         log.info("회원가입 시도: {}", userDTO.getUsername());
 
-            String UserName =userService.registerUser(userDTO);
-            return ResponseEntity.ok(new ResponseDTO<>(200, null, "회원가입 성공", UserName));
+            String userName =userService.registerUser(userDTO);
+            return ResponseEntity.ok(new ResponseDTO<>(200, null, "회원가입 성공", userName));
     }
     @GetMapping("/profile")
     public ResponseEntity<ResponseDTO<?>> getProfile(HttpServletRequest request){
         String token = jwtService.getTokenFromHeader(request.getHeader("Authorization"));
         String userId = jwtService.getUserIdFromToken(token);
+
+        if (userId == null) {
+            return ResponseEntity.ok(new ResponseDTO<>(400, "AUTH_MISSING", "Authorization 헤더가 누락되었거나 유효하지 않습니다", null));
+        }
+
         UserDTO user = userService.getProfile(userId);
         return ResponseEntity.ok(new ResponseDTO<>(200, null, "유저정보 조회 성공", user));
     }

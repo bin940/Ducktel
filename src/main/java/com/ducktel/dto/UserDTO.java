@@ -40,6 +40,8 @@ public class UserDTO {
     @Size(min =2, max =8, message= "이름은 2자 이상 8자 이아로 입력해주세요.")
     private String name;
 
+
+
     public User createUser(PasswordEncoder passwordEncoder) {
         String userIdUUID = UUID.randomUUID().toString();
         User user = new User();

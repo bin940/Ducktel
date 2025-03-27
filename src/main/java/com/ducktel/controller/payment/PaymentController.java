@@ -26,6 +26,10 @@ public class PaymentController {
     public ResponseEntity<?> createPayment(HttpServletRequest request,@Valid  @RequestBody PaymentRequestDTO paymentRequestDTO) {
         String token = jwtService.getTokenFromHeader(request.getHeader("Authorization"));
         String userId = jwtService.getUserIdFromToken(token);
+
+        if (userId == null) {
+            return ResponseEntity.ok(new ResponseDTO<>(400, "AUTH_MISSING", "Authorization 헤더가 누락되었거나 유효하지 않습니다.", null));
+        }
         paymentRequestDTO.setUserId(userId);
         PaymentResponseDTO paymentRetrieve =  paymentService.processPayment(paymentRequestDTO);
         return ResponseEntity.ok(new ResponseDTO<>(200, null, "예약 성공", paymentRetrieve));

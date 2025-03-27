@@ -40,6 +40,7 @@ class HomeControllerTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value(200))
+                .andExpect(jsonPath("$.errorCode").doesNotExist())
                 .andExpect(jsonPath("$.message").value("Home Data 조회 성공"))
                 .andExpect(jsonPath("$.data").exists());
     }
@@ -54,6 +55,7 @@ class HomeControllerTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value(200))
+                .andExpect(jsonPath("$.errorCode").doesNotExist())
                 .andExpect(jsonPath("$.message").value("Sub-Home Data 조회 성공"))
                 .andExpect(jsonPath("$.data").exists());
     }
@@ -69,6 +71,7 @@ class HomeControllerTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value(200))
+                .andExpect(jsonPath("$.errorCode").doesNotExist())
                 .andExpect(jsonPath("$.message").value("Location Home Data 조회 성공"))
                 .andExpect(jsonPath("$.data").exists());
     }
@@ -81,10 +84,11 @@ class HomeControllerTest {
                 .thenThrow(new CustomException("INVALID_CATEGORY", "존재하지 않는 카테고리"));
 
         mockMvc.perform(get("/api/sub-home/{category}", category))
-                .andExpect(status().isOk()) 
+                .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value(400))
                 .andExpect(jsonPath("$.errorCode").value("INVALID_CATEGORY"))
-                .andExpect(jsonPath("$.message").value("존재하지 않는 카테고리"));
+                .andExpect(jsonPath("$.message").value("존재하지 않는 카테고리"))
+                .andExpect(jsonPath("$.data").doesNotExist());
     }
 
     @Test
@@ -99,6 +103,7 @@ class HomeControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value(400))
                 .andExpect(jsonPath("$.errorCode").value("INVALID_LOCATION"))
-                .andExpect(jsonPath("$.message").value("위치 값이 유효하지 않습니다"));
+                .andExpect(jsonPath("$.message").value("위치 값이 유효하지 않습니다"))
+                .andExpect(jsonPath("$.data").doesNotExist());
     }
 }

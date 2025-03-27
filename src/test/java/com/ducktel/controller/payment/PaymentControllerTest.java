@@ -65,24 +65,23 @@ class PaymentControllerTest {
         when(jwtService.getUserIdFromToken("test.jwt.token")).thenReturn(userId);
         when(paymentService.processPayment(any())).thenReturn(responseDTO);
 
-        // when & then
-        mockMvc.perform(post("/create")
+        mockMvc.perform(post("/api/payment/create")
                         .header("Authorization", token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestDTO)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value(200))
+                .andExpect(jsonPath("$.errorCode").doesNotExist())
                 .andExpect(jsonPath("$.message").value("예약 성공"))
                 .andExpect(jsonPath("$.data.pgTransactionId").value("PG123456789"));
     }
 
     @Test
     void createPayment_validationFail_dueToEmptyName() throws Exception {
-        
         PaymentRequestDTO requestDTO = new PaymentRequestDTO();
         requestDTO.setAccommodationId(1L);
         requestDTO.setRoomId(101L);
-        requestDTO.setName("");
+        requestDTO.setName(" ");
         requestDTO.setPhoneNumber("01012345678");
         requestDTO.setCheckInDate(LocalDate.now().plusDays(1));
         requestDTO.setCheckOutDate(LocalDate.now().plusDays(2));
@@ -90,36 +89,39 @@ class PaymentControllerTest {
         requestDTO.setAmount(new BigDecimal("150000"));
         requestDTO.setPaymentMethod("CARD");
 
-        mockMvc.perform(post("/create")
+        mockMvc.perform(post("/api/payment/create")
                         .header("Authorization", "Bearer test.jwt.token")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestDTO)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value(400))
-                .andExpect(jsonPath("$.message").exists());
+                .andExpect(jsonPath("$.errorCode").value("VALIDATION_FAILED"))
+                .andExpect(jsonPath("$.message").value("이름을 입력해주세요."))
+                .andExpect(jsonPath("$.data").doesNotExist());
     }
 
     @Test
     void createPayment_validationFail_dueToInvalidPhoneNumber() throws Exception {
-
         PaymentRequestDTO requestDTO = new PaymentRequestDTO();
         requestDTO.setAccommodationId(1L);
         requestDTO.setRoomId(101L);
         requestDTO.setName("홍길동");
-        requestDTO.setPhoneNumber("0101234"); // invalid
+        requestDTO.setPhoneNumber("0101234");
         requestDTO.setCheckInDate(LocalDate.now().plusDays(1));
         requestDTO.setCheckOutDate(LocalDate.now().plusDays(2));
         requestDTO.setPaymentComplete(true);
         requestDTO.setAmount(new BigDecimal("150000"));
         requestDTO.setPaymentMethod("CARD");
 
-        mockMvc.perform(post("/create")
+        mockMvc.perform(post("/api/payment/create")
                         .header("Authorization", "Bearer test.jwt.token")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestDTO)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value(400))
-                .andExpect(jsonPath("$.message").exists());
+                .andExpect(jsonPath("$.errorCode").value("VALIDATION_FAILED"))
+                .andExpect(jsonPath("$.message").value("전화번호는 10자 이상 11자 이하로 입력해주세요."))
+                .andExpect(jsonPath("$.data").doesNotExist());
     }
 
     @Test
@@ -135,11 +137,13 @@ class PaymentControllerTest {
         requestDTO.setAmount(new BigDecimal("150000"));
         requestDTO.setPaymentMethod("CARD");
 
-        mockMvc.perform(post("/create")
+        mockMvc.perform(post("/api/payment/create")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestDTO)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value(400))
-                .andExpect(jsonPath("$.message").value("유효하지 않은 토큰"));
+                .andExpect(jsonPath("$.errorCode").value("AUTH_MISSING"))
+                .andExpect(jsonPath("$.message").value("Authorization 헤더가 누락되었거나 유효하지 않습니다."))
+                .andExpect(jsonPath("$.data").doesNotExist());
     }
 }
