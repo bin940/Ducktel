@@ -91,4 +91,12 @@ public class UserController {
         return ResponseEntity.ok(result);
 
     }
+    @PostMapping("/likes")
+    public ResponseEntity<String> toggleLike(HttpServletRequest request,
+                                             @RequestParam Long accommodationId) {
+        String token = jwtService.getTokenFromHeader(request.getHeader("Authorization"));
+        String userId = jwtService.getUserIdFromToken(token);
+        String result = userService.toggleLike(userId, accommodationId);
+        return ResponseEntity.ok(result);
+    }
 }

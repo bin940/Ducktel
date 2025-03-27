@@ -8,4 +8,5 @@ public interface UserService {
     UserDTO updateProfile(String userId, UserDTO userData);
     String deleteProfile(String userId);
     String passWordReset(String userId, String newPassword);
+    String toggleLike (String userId, Long accommodationId);
 }
