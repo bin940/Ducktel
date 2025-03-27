@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.ducktel.service.UserServiceImplTest" tests="8" skipped="0" failures="0" errors="0" timestamp="2025-03-27T06:27:57" hostname="DESKTOP-OU47E0U" time="1.068">
+  <properties/>
+  <testcase name="updateProfile_Success()" classname="com.ducktel.service.UserServiceImplTest" time="1.021"/>
+  <testcase name="passWordReset_Success()" classname="com.ducktel.service.UserServiceImplTest" time="0.013"/>
+  <testcase name="getProfile_NotFound()" classname="com.ducktel.service.UserServiceImplTest" time="0.006"/>
+  <testcase name="registerUser_Success()" classname="com.ducktel.service.UserServiceImplTest" time="0.005"/>
+  <testcase name="registerUser_UsernameAlreadyExists()" classname="com.ducktel.service.UserServiceImplTest" time="0.003"/>
+  <testcase name="getProfile_Success()" classname="com.ducktel.service.UserServiceImplTest" time="0.002"/>
+  <testcase name="deleteProfile_Success()" classname="com.ducktel.service.UserServiceImplTest" time="0.009"/>
+  <testcase name="deleteProfile_NotFound()" classname="com.ducktel.service.UserServiceImplTest" time="0.003"/>
+  <system-out><![CDATA[15:27:58.228 [Test worker] INFO com.ducktel.service.UserServiceImpl -- 1개가 변경 되었습니다.
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

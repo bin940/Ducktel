@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  backend:
+    build: ./DuckBack
+    ports:
+      - "8090:8090"
+    depends_on:
+      - db
+      - minio
+
+  frontend:
+    build: ./duckfront
+    ports:
+      - "5173:5173"
+
+  db:
+    image: mysql:8
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: ducktel
+    volumes:
+      - db-data:/var/lib/mysql
+
+  minio:
+    image: minio/minio
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin123
+    volumes:
+      - minio-data:/data
+    command: server /data --console-address ":9001"
+
+volumes:
+  db-data:
+  minio-data:
