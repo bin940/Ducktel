@@ -90,3 +90,5 @@ ducktel/
 | POST   | `/api/users/password-reset`            | 비밀번호 재설정 요청     | UserController    |
 
 ---
+## 🌍 ERD
+![ERD](./images/Ducktel.png)
