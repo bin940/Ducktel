@@ -1,0 +1,7 @@
+CREATE DATABASE IF NOT EXISTS Ducktel;
+
+CREATE USER IF NOT EXISTS 'DucktelAdmin'@'%' IDENTIFIED WITH 'caching_sha2_password' BY 'Ducktel123';
+
+GRANT ALL PRIVILEGES ON Ducktel.* TO 'DucktelAdmin'@'%';
+
+FLUSH PRIVILEGES;

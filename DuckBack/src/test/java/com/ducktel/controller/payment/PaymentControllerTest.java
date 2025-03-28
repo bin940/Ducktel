@@ -81,7 +81,7 @@ class PaymentControllerTest {
         PaymentRequestDTO requestDTO = new PaymentRequestDTO();
         requestDTO.setAccommodationId(1L);
         requestDTO.setRoomId(101L);
-        requestDTO.setName(" ");
+        requestDTO.setName("a");
         requestDTO.setPhoneNumber("01012345678");
         requestDTO.setCheckInDate(LocalDate.now().plusDays(1));
         requestDTO.setCheckOutDate(LocalDate.now().plusDays(2));
@@ -96,7 +96,7 @@ class PaymentControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value(400))
                 .andExpect(jsonPath("$.errorCode").value("VALIDATION_FAILED"))
-                .andExpect(jsonPath("$.message").value("이름을 입력해주세요."))
+                .andExpect(jsonPath("$.message").value("이름은 2자 이상 8자 이아로 입력해주세요."))
                 .andExpect(jsonPath("$.data").doesNotExist());
     }
 

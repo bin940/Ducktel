@@ -12,17 +12,20 @@ services:
   frontend:
     build: ./duckfront
     ports:
-      - "5173:5173"
+      - "80:80"
 
   db:
     image: mysql:8
     ports:
-      - "3306:3306"
+      - "3307:3306"
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: ducktel
+      MYSQL_DATABASE: Ducktel
+      MYSQL_USER: DucktelAdmin
+      MYSQL_PASSWORD: Ducktel123
     volumes:
       - db-data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
 
   minio:
     image: minio/minio

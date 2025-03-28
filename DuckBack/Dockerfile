@@ -1,9 +1,10 @@
-FROM gradle:8.2.1-jdk17 AS builder
+FROM gradle:8.12-jdk17 AS builder
 WORKDIR /app
 COPY . .
 ENV GRADLE_USER_HOME=/home/gradle_cache
 RUN mkdir -p /home/gradle_cache && \
-    gradle build --no-daemon
+    chown -R gradle:gradle /home/gradle_cache && \
+    gradle build --no-daemon --stacktrace
 
 FROM openjdk:17
 WORKDIR /app
