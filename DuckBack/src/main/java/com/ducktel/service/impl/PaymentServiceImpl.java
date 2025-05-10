@@ -1,4 +1,4 @@
-package com.ducktel.service;
+package com.ducktel.service.impl;
 
 import com.ducktel.domain.entity.*;
 import com.ducktel.domain.enums.PaymentStatus;
@@ -6,6 +6,7 @@ import com.ducktel.domain.repository.*;
 import com.ducktel.dto.PaymentRequestDTO;
 import com.ducktel.dto.PaymentResponseDTO;
 import com.ducktel.exception.CustomException;
+import com.ducktel.service.PaymentService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -26,11 +27,11 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public PaymentResponseDTO processPayment(PaymentRequestDTO paymentRequestDTO) {
         User user = userRepository.findById(paymentRequestDTO.getUserId())
-                .orElseThrow(() -> new CustomException("NOT FOUND", "아이디를 찾을 수 없습니다. ID: " + paymentRequestDTO.getUserId()));
+                .orElseThrow(() -> new CustomException(404,"NOT FOUND", "아이디를 찾을 수 없습니다. ID: " + paymentRequestDTO.getUserId()));
         Accommodation accommodation = accommodationRepository.findById(paymentRequestDTO.getAccommodationId())
-                .orElseThrow(() -> new CustomException("NOT FOUND", "숙소를 찾을 수 없습니다." + paymentRequestDTO.getAccommodationId()));
+                .orElseThrow(() -> new CustomException(404,"NOT FOUND", "숙소를 찾을 수 없습니다." + paymentRequestDTO.getAccommodationId()));
         Room room = roomRepository.findById(paymentRequestDTO.getRoomId())
-                .orElseThrow(() -> new CustomException("NOT FOUND", "객실을 찾을 수 없습니다." + paymentRequestDTO.getRoomId()));
+                .orElseThrow(() -> new CustomException(404,"NOT FOUND", "객실을 찾을 수 없습니다." + paymentRequestDTO.getRoomId()));
 
         Booking booking = new Booking();
         booking.setUser(user);

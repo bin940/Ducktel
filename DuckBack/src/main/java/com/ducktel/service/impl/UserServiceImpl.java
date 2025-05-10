@@ -1,4 +1,4 @@
-package com.ducktel.service;
+package com.ducktel.service.impl;
 
 import com.ducktel.domain.entity.Accommodation;
 import com.ducktel.domain.entity.AccommodationLike;
@@ -8,6 +8,7 @@ import com.ducktel.exception.CustomException;
 import com.ducktel.domain.entity.User;
 import com.ducktel.domain.repository.UserRepository;
 import com.ducktel.dto.UserDTO;
+import com.ducktel.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -27,7 +28,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public String registerUser(UserDTO userDTO) {
         if(userRepository.existsByUsername(userDTO.getUsername())) {
-            throw new CustomException("USERNAME_ALREADY_EXISTS", "이미 존재하는 사용자명입니다.");
+            throw new CustomException(400,"BAD_REQUEST", "이미 존재하는 사용자명입니다.");
         }
         User user = userDTO.createUser(passwordEncoder);
 
@@ -38,7 +39,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDTO getProfile(String userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UsernameNotFoundException("등록되지 않은 사용자입니다: " + userId));
+                .orElseThrow(() -> new CustomException(404, "NOT_FOUND", "등록되지 않은 사용자입니다: " + userId));
 
         return user.getUser();
     }
@@ -46,7 +47,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDTO updateProfile(String userId, UserDTO userData) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UsernameNotFoundException("등록되지 않은 사용자입니다: " + userId));
+                .orElseThrow(() -> new CustomException(404, "NOT_FOUND", "등록되지 않은 사용자입니다: " + userId));
        user = userData.updateUser(user);
 
         User updatedUser = userRepository.save(user);
@@ -57,7 +58,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public String deleteProfile(String userId) {
         if (!userRepository.existsById(userId)) {
-            throw new CustomException("NOT FOUND", "유저를 찾을 수 없습니다. ID: " + userId);
+            throw new CustomException(404,"NOT FOUND", "유저를 찾을 수 없습니다. ID: " + userId);
         }
         userRepository.deleteById(userId);
         return "삭제되었습니다.";
@@ -73,9 +74,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public String toggleLike(String userId, Long accommodationId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new CustomException("NOT_FOUND", "사용자 없음"));
+                .orElseThrow(() -> new CustomException(404,"NOT_FOUND", "사용자 없음"));
         Accommodation accommodation = accommodationRepository.findById(accommodationId)
-                .orElseThrow(() -> new CustomException("NOT_FOUND", "숙소 없음"));
+                .orElseThrow(() -> new CustomException(404,"NOT_FOUND", "숙소 없음"));
 
         Optional<AccommodationLike> existingLike = likeRepository.findByUserAndAccommodation(user, accommodation);
 

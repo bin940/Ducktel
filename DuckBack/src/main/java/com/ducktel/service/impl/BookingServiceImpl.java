@@ -1,4 +1,4 @@
-package com.ducktel.service;
+package com.ducktel.service.impl;
 
 import com.ducktel.domain.entity.*;
 import com.ducktel.domain.repository.*;
@@ -6,6 +6,7 @@ import com.ducktel.dto.AccommodationDTO;
 import com.ducktel.dto.BookingDetailDTO;
 import com.ducktel.dto.RoomDTO;
 import com.ducktel.exception.CustomException;
+import com.ducktel.service.BookingService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -35,7 +36,7 @@ public class BookingServiceImpl implements BookingService {
         Long bookingId = bookingData.getBookingId();
         log.info("bookingId: {}", bookingId);
         Booking booking = bookingRepository.findById(bookingId)
-                .orElseThrow(() -> new CustomException("NOT FOUND","예약을 찾을 수 없습니다. ID: " + bookingId));
+                .orElseThrow(() -> new CustomException(404,"NOT FOUND","예약을 찾을 수 없습니다. ID: " + bookingId));
         log.info("booking: {}", booking);
         booking = bookingData.updateBooikng(booking);
         Booking updatedBooking = bookingRepository.save(booking);
@@ -45,7 +46,7 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public List<BookingDetailDTO> deleteBooking(String userId, Long bookingId) {
         if (!bookingRepository.existsById(bookingId)) {
-            throw new CustomException("NOT FOUND", "예약을 찾을 수 없습니다. ID: " + bookingId);
+            throw new CustomException(404,"NOT FOUND", "예약을 찾을 수 없습니다. ID: " + bookingId);
         }
 
         bookingRepository.deleteById(bookingId);
@@ -58,7 +59,7 @@ public class BookingServiceImpl implements BookingService {
     private List<BookingDetailDTO> convertToBookingDetailDTOList(List<Booking> bookings) {
         return bookings.stream().map(booking -> {
             Room room = roomRepository.findById(booking.getRoom().getRoomId())
-                    .orElseThrow(() -> new CustomException("NOT FOUND", "객실 정보를 찾을 수 없습니다."));
+                    .orElseThrow(() -> new CustomException(404,"NOT FOUND", "객실 정보를 찾을 수 없습니다."));
 
             List<String> roomImages = roomImageRepository.findByRoom_RoomId(room.getRoomId())
                     .stream()
@@ -66,7 +67,7 @@ public class BookingServiceImpl implements BookingService {
                     .toList();
 
             Accommodation accommodation = accommodationRepository.findById(booking.getAccommodation().getAccommodationId())
-                    .orElseThrow(() -> new CustomException("NOT FOUND", "숙소 정보를 찾을 수가 없습니다."));
+                    .orElseThrow(() -> new CustomException(404,"NOT FOUND", "숙소 정보를 찾을 수가 없습니다."));
 
             List<String> accommodationImages = accommodationImageRepository.findByAccommodation_AccommodationId(accommodation.getAccommodationId())
                     .stream()

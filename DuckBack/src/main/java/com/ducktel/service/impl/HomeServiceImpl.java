@@ -1,4 +1,4 @@
-package com.ducktel.service;
+package com.ducktel.service.impl;
 
 import com.ducktel.domain.entity.Accommodation;
 import com.ducktel.domain.entity.AccommodationImage;
@@ -6,6 +6,7 @@ import com.ducktel.domain.repository.AccommodationImageRepository;
 import com.ducktel.domain.repository.AccommodationRepository;
 import com.ducktel.dto.AccommodationDTO;
 import com.ducktel.dto.HomeResponseDTO;
+import com.ducktel.service.HomeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

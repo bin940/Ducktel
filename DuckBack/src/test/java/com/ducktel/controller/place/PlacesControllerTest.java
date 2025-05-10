@@ -55,7 +55,7 @@ class PlacesControllerTest {
         LocalDate checkOutDate = LocalDate.now().plusDays(1);
 
         when(placesService.getPlaces(accommodationId, checkInDate, checkOutDate))
-                .thenThrow(new CustomException("INVALID_DATE_RANGE", "체크아웃 날짜는 체크인 날짜보다 늦어야 합니다"));
+                .thenThrow(new CustomException(400,"INVALID_DATE_RANGE", "체크아웃 날짜는 체크인 날짜보다 늦어야 합니다"));
 
         mockMvc.perform(get("/api/places/{accommodationId}/{checkInData}/{checkOutData}",
                         accommodationId, checkInDate, checkOutDate)

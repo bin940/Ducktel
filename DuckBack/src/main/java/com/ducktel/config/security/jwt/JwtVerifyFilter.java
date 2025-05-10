@@ -33,10 +33,10 @@ public class JwtVerifyFilter extends OncePerRequestFilter {
 
 
     private static void checkAuthorizationHeader(String header) {
-        if(header == null) {
-            throw new CustomJwtException("토큰이 전달되지 않았습니다");
+        if (header == null) {
+            throw new CustomJwtException(401, "MISSING_TOKEN", "토큰이 전달되지 않았습니다");
         } else if (!header.startsWith(JwtConstants.JWT_TYPE)) {
-            throw new CustomJwtException("BEARER 로 시작하지 않는 올바르지 않은 토큰 형식입니다");
+            throw new CustomJwtException(401, "INVALID_TOKEN_FORMAT", "BEARER로 시작하지 않는 올바르지 않은 토큰 형식입니다");
         }
     }
 
@@ -64,8 +64,8 @@ public class JwtVerifyFilter extends OncePerRequestFilter {
             checkAuthorizationHeader(authHeader);   // header 가 올바른 형식인지 체크
             String token = JwtUtils.getTokenFromHeader(authHeader);
             // 토큰 만료 확인
-            if(JwtUtils.isExpired(token)){
-                throw new CustomExpiredJwtException("토큰이 만료되었습니다");
+            if (JwtUtils.isExpired(token)) {
+                throw new CustomExpiredJwtException(401, "TOKEN_EXPIRED", "토큰이 만료되었습니다");
             }
             //토큰 검증 및 claims 가져오기
             Map<String, Object> claims = JwtUtils.validateToken(token);

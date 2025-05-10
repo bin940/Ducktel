@@ -4,6 +4,7 @@ package com.ducktel.service;
 import com.ducktel.domain.entity.*;
 import com.ducktel.domain.repository.*;
 import com.ducktel.dto.BookingDetailDTO;
+import com.ducktel.service.impl.BookingServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

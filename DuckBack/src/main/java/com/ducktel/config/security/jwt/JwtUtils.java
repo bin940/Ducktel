@@ -72,7 +72,7 @@ public class JwtUtils {
     // jwt userId 따로 사용
     public static String getUserIdFromToken(String token) {
         if (token == null) {
-            throw new CustomException("INVALID_TOKEN", "토큰이 null입니다.");
+            throw new CustomJwtException(401,"INVALID_TOKEN", "토큰이 null입니다.");
         }
         try {
             Claims claims = Jwts.parserBuilder()
@@ -83,11 +83,11 @@ public class JwtUtils {
             String userId = claims.get("userId", String.class);
             System.out.println("JwtUtils - 추출된 userId: " + userId); // 디버깅
             if (userId == null) {
-                throw new CustomException("INVALID_TOKEN", "토큰에 userId가 없습니다.");
+                throw new CustomJwtException(401,"INVALID_TOKEN", "토큰에 userId가 없습니다.");
             }
             return userId;
         } catch (Exception e) {
-            throw new CustomException("INVALID_TOKEN", "토큰 파싱 실패: " + e.getMessage());
+            throw new CustomJwtException(401,"INVALID_TOKEN", "토큰 파싱 실패: " + e.getMessage());
         }
     }
     public static String getTokenType(String token) {
@@ -95,13 +95,13 @@ public class JwtUtils {
             Map<String, Object> claims = validateToken(token);
             String type = (String) claims.get("type");
             if (type == null) {
-                throw new CustomException("INVALID_TOKEN", "토큰에 type 정보가 없습니다.");
+                throw new CustomJwtException(401,"INVALID_TOKEN", "토큰에 type 정보가 없습니다.");
             }
             return type;
         } catch (CustomExpiredJwtException | CustomJwtException e) {
             throw e;
         } catch (Exception e) {
-            throw new CustomException("INVALID_TOKEN", "토큰 파싱 실패: " + e.getMessage());
+            throw new CustomJwtException(401,"INVALID_TOKEN", "토큰 파싱 실패: " + e.getMessage());
         }
     }
 
@@ -115,11 +115,11 @@ public class JwtUtils {
                     .getBody();
 
         } catch (ExpiredJwtException e) {
-            throw new CustomExpiredJwtException("토큰이 만료되었습니다.", e);
-        }catch (JwtException e) {
-            throw new CustomJwtException("유효하지 않은 JWT 토큰입니다:"+ e.getMessage());
+            throw new CustomExpiredJwtException(401, "TOKEN_EXPIRED", "토큰이 만료되었습니다.", e);
+        } catch (JwtException e) {
+            throw new CustomJwtException(401, "INVALID_TOKEN", "유효하지 않은 JWT 토큰입니다: " + e.getMessage());
         } catch (Exception e) {
-            throw new CustomJwtException("JWT 검증 실패: " + e.getMessage());
+            throw new CustomJwtException(401, "JWT_VERIFICATION_FAILED", "JWT 검증 실패: " + e.getMessage());
         }
     }
 
@@ -140,6 +140,9 @@ public class JwtUtils {
 
     // 토큰의 남은 만료시간 계산
     public static long tokenRemainTime(Integer expTime) {
+        if (expTime == null) {
+            throw new IllegalArgumentException("expTime이 null입니다.");
+        }
         Date expDate = new Date((long) expTime * (1000));
         long remainMs = expDate.getTime() - System.currentTimeMillis();
         return remainMs / (1000 * 60);

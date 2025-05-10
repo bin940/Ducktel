@@ -7,6 +7,7 @@ import com.ducktel.domain.repository.*;
 import com.ducktel.dto.PaymentRequestDTO;
 import com.ducktel.dto.PaymentResponseDTO;
 import com.ducktel.exception.CustomException;
+import com.ducktel.service.impl.PaymentServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

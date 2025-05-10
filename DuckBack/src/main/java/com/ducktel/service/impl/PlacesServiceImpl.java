@@ -1,4 +1,4 @@
-package com.ducktel.service;
+package com.ducktel.service.impl;
 
 import com.ducktel.domain.entity.Accommodation;
 import com.ducktel.domain.entity.AccommodationImage;
@@ -9,6 +9,7 @@ import com.ducktel.dto.AccommodationDTO;
 import com.ducktel.dto.PlacesDTO;
 import com.ducktel.dto.RoomDTO;
 import com.ducktel.exception.CustomException;
+import com.ducktel.service.PlacesService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -35,7 +36,7 @@ public class PlacesServiceImpl implements PlacesService {
     public PlacesDTO getPlaces(Long accommodationId, LocalDate checkInDate, LocalDate checkOutDate) {
         // 숙소 정보
         Accommodation accommodation = accommodationRepository.findById(accommodationId)
-                .orElseThrow(() -> new CustomException("INVALID_ACCOMMODATION_ID", "Invalid accommodation ID: " + accommodationId));
+                .orElseThrow(() -> new CustomException(404,"NOT_FOUND", "유효하지 않은 숙소 ID입니다: " + accommodationId));
         List<String> accommodationImages = accommodationImageRepository.findByAccommodation_AccommodationId(accommodationId)
                 .stream()
                 .map(AccommodationImage::getImage)

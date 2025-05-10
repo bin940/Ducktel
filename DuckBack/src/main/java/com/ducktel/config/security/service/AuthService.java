@@ -3,20 +3,11 @@ package com.ducktel.config.security.service;
 import com.ducktel.config.security.jwt.JwtUtils;
 import com.ducktel.domain.entity.RefreshToken;
 import com.ducktel.domain.repository.RefreshTokenRepository;
-import com.ducktel.dto.PrincipalDetailDTO;
-import com.ducktel.exception.CustomException;
+import com.ducktel.exception.CustomJwtException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Optional;
 
@@ -31,7 +22,7 @@ public class AuthService {
         // DB에서 리프레시 토큰 확인
         Optional<RefreshToken> storedToken = refreshTokenRepository.findByToken(refreshToken);
         if (storedToken.isEmpty() || JwtUtils.isExpired(refreshToken) || !"refresh".equals(JwtUtils.getTokenType(refreshToken))) {
-            throw new CustomException("INVALID_REFRESH_TOKEN", "유효하지 않은 리프레시 토큰");
+            throw new CustomJwtException(401, "INVALID_TOKEN", "토큰이 null입니다.");
         }
 
         // 토큰에서 사용자 정보 추출

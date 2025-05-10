@@ -63,7 +63,7 @@ class AuthControllerTest {
         request.put("refreshToken", "invalidRefreshToken");
 
         when(authService.refresh("invalidRefreshToken"))
-                .thenThrow(new CustomException("INVALID_REFRESH_TOKEN", "유효하지 않은 리프레시 토큰"));
+                .thenThrow(new CustomException(400,"INVALID_REFRESH_TOKEN", "유효하지 않은 리프레시 토큰"));
 
         mockMvc.perform(post("/api/auth/refresh")
                         .contentType(MediaType.APPLICATION_JSON)
