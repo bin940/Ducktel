@@ -18,23 +18,31 @@ public class HomeController {
 
     @GetMapping("/api/home")
     public ResponseEntity<ResponseDTO<?>> getHomeData() {
+        log.debug("홈 데이터 조회 요청");
 
         HomeResponseDTO homeData= homeService.getHomeData();
+        log.info("홈 데이터 조회 성공: {}", homeData);
+
         return ResponseEntity.ok(new ResponseDTO<>(200, null, "Home Data 조회 성공", homeData));
     }
 
-    @GetMapping("/api/sub-home/{category}")
+    @GetMapping("/api/home/{category}")
     public ResponseEntity<ResponseDTO<?>> getSubHomeData(@PathVariable("category") String category) {
+        log.debug("카테고리별 홈 데이터 조회 요청: category={}", category);
 
-        HomeResponseDTO subHomeData = homeService.getSubHomeData(category);
-        log.info(subHomeData.toString());
-        return ResponseEntity.ok(new ResponseDTO<>(200, null, "Sub-Home Data 조회 성공", subHomeData));
+        HomeResponseDTO categoryHomeData = homeService.getSubHomeData(category);
+        log.info("카테고리별 홈 데이터 조회 성공: {}", categoryHomeData);
+
+        return ResponseEntity.ok(new ResponseDTO<>(200, null, "Sub-Home Data 조회 성공", categoryHomeData));
     }
-    @GetMapping("/api/sub-home/{category}/{location}")
+    @GetMapping("/api/home/{category}/{location}")
     public ResponseEntity<ResponseDTO<?>> getLocationHomeData(@PathVariable("category") String category,
                                                                  @PathVariable("location") String location) {
-        log.info("getLocationHomeData category: {}, location: {}", category, location);
-        HomeResponseDTO LocationHomeData = homeService.getLocationHomeData(category, location);
-        return ResponseEntity.ok(new ResponseDTO<>(200, null, "Location Home Data 조회 성공", LocationHomeData));
+        log.debug("카테고리 및 위치별 홈 데이터 조회 요청: category={}, location={}", category, location);
+
+        HomeResponseDTO locationHomeData = homeService.getLocationHomeData(category, location);
+        log.info("카테고리 및 위치별 홈 데이터 조회 성공: {}", locationHomeData);
+
+        return ResponseEntity.ok(new ResponseDTO<>(200, null, "Location Home Data 조회 성공", locationHomeData));
     }
 }

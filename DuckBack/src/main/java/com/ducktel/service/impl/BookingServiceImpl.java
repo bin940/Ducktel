@@ -27,39 +27,62 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public List<BookingDetailDTO> getBookingDetail(String userId) {
+        log.debug("BookingDetail 조회 요청: userId={}", userId);
+
         List<Booking> bookings = bookingRepository.findByUser_UserId(userId);
-        return convertToBookingDetailDTOList(bookings);
+        List<BookingDetailDTO> bookingDetails = convertToBookingDetailDTOList(bookings);
+
+        log.info("BookingDetail 조회 성공: userId={}, bookingCount={}", userId, bookingDetails.size());
+        return bookingDetails;
     }
 
     @Override
     public BookingDetailDTO updateBooking(BookingDetailDTO bookingData) {
         Long bookingId = bookingData.getBookingId();
-        log.info("bookingId: {}", bookingId);
+        log.debug("Booking 업데이트 요청: bookingId={}", bookingId);
+
         Booking booking = bookingRepository.findById(bookingId)
-                .orElseThrow(() -> new CustomException(404,"NOT FOUND","예약을 찾을 수 없습니다. ID: " + bookingId));
-        log.info("booking: {}", booking);
+                .orElseThrow(() -> {
+                    log.warn("Booking 업데이트 실패 - 예약을 찾을 수 없음: bookingId={}", bookingId);
+                    return new CustomException(404, "NOT FOUND", "예약을 찾을 수 없습니다. ID: " + bookingId);
+                });
+
+        log.info("Booking 업데이트 진행: bookingId={}", bookingId);
         booking = bookingData.updateBooikng(booking);
         Booking updatedBooking = bookingRepository.save(booking);
+
+        log.info("Booking 업데이트 성공: bookingId={}", bookingId);
         return updatedBooking.updateBooking(bookingData);
     }
 
     @Override
     public List<BookingDetailDTO> deleteBooking(String userId, Long bookingId) {
+        log.debug("Booking 삭제 요청: userId={}, bookingId={}", userId, bookingId);
+
         if (!bookingRepository.existsById(bookingId)) {
-            throw new CustomException(404,"NOT FOUND", "예약을 찾을 수 없습니다. ID: " + bookingId);
+            log.warn("Booking 삭제 실패 - 예약을 찾을 수 없음: bookingId={}", bookingId);
+            throw new CustomException(404, "NOT FOUND", "예약을 찾을 수 없습니다. ID: " + bookingId);
         }
 
         bookingRepository.deleteById(bookingId);
+        log.info("Booking 삭제 성공: bookingId={}", bookingId);
 
         List<Booking> bookings = bookingRepository.findByUser_UserId(userId);
+        List<BookingDetailDTO> bookingDetails = convertToBookingDetailDTOList(bookings);
 
-        return convertToBookingDetailDTOList(bookings);
+        log.info("Booking 삭제 후 남은 예약 조회 성공: userId={}, remainingBookingCount={}", userId, bookingDetails.size());
+        return bookingDetails;
     }
 
     private List<BookingDetailDTO> convertToBookingDetailDTOList(List<Booking> bookings) {
-        return bookings.stream().map(booking -> {
+        log.debug("BookingDetail 변환 요청: bookingCount={}", bookings.size());
+
+        List<BookingDetailDTO> bookingDetails = bookings.stream().map(booking -> {
             Room room = roomRepository.findById(booking.getRoom().getRoomId())
-                    .orElseThrow(() -> new CustomException(404,"NOT FOUND", "객실 정보를 찾을 수 없습니다."));
+                    .orElseThrow(() -> {
+                        log.warn("Room 조회 실패: roomId={}", booking.getRoom().getRoomId());
+                        return new CustomException(404, "NOT FOUND", "객실 정보를 찾을 수 없습니다.");
+                    });
 
             List<String> roomImages = roomImageRepository.findByRoom_RoomId(room.getRoomId())
                     .stream()
@@ -67,13 +90,17 @@ public class BookingServiceImpl implements BookingService {
                     .toList();
 
             Accommodation accommodation = accommodationRepository.findById(booking.getAccommodation().getAccommodationId())
-                    .orElseThrow(() -> new CustomException(404,"NOT FOUND", "숙소 정보를 찾을 수가 없습니다."));
+                    .orElseThrow(() -> {
+                        log.warn("Accommodation 조회 실패: accommodationId={}", booking.getAccommodation().getAccommodationId());
+                        return new CustomException(404, "NOT FOUND", "숙소 정보를 찾을 수가 없습니다.");
+                    });
 
             List<String> accommodationImages = accommodationImageRepository.findByAccommodation_AccommodationId(accommodation.getAccommodationId())
                     .stream()
                     .map(AccommodationImage::getImage)
                     .toList();
 
+            log.debug("BookingDetail 변환 성공: bookingId={}", booking.getBookingId());
             return BookingDetailDTO.builder()
                     .bookingId(booking.getBookingId())
                     .createdAt(booking.getCreatedAt())
@@ -106,6 +133,9 @@ public class BookingServiceImpl implements BookingService {
                             .build())
                     .build();
         }).collect(Collectors.toList());
+
+        log.info("BookingDetail 변환 완료: bookingCount={}", bookingDetails.size());
+        return bookingDetails;
     }
 }
 
