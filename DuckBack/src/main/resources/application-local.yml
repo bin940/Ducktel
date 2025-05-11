@@ -1,0 +1,12 @@
+spring:
+  datasource:
+    url: jdbc:mysql://db:3306/Ducktel?useSSL=false&allowPublicKeyRetrieval=true
+    username: DucktelAdmin
+    password: Ducktel123
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+logging:
+  level:
+    root: DEBUG
+    org.springframework.web: DEBUG
+    com.ducktelback: DEBUG
