@@ -1,8 +1,13 @@
 package com.ducktel.config.security.jwt;
 
+import com.ducktel.dto.ResponseDTO;
 import com.ducktel.exception.CustomExpiredJwtException;
 import com.ducktel.exception.CustomJwtException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.shaded.gson.Gson;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -14,6 +19,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Date;
 import java.util.Map;
 
 @Slf4j
@@ -40,6 +46,13 @@ public class JwtVerifyFilter extends OncePerRequestFilter {
         }
     }
 
+    private void handleJwtError(HttpServletResponse response, int status, String errorCode, String message) throws IOException {
+        response.setStatus(status);
+        response.setContentType("application/json");
+        ResponseDTO<?> error = new ResponseDTO<>(status, errorCode, message, null);
+        new ObjectMapper().writeValue(response.getWriter(), error);
+    }
+
     // 필터를 거치지 않을 URL 을 설정하고, true 를 return 하면 현재 필터를 건너뛰고 다음 필터로 이동
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
@@ -60,45 +73,36 @@ public class JwtVerifyFilter extends OncePerRequestFilter {
         String authHeader = request.getHeader(JwtConstants.JWT_HEADER);
         String requestURI = request.getRequestURI();
         log.info("Request URI: {} | Should Skip: false", requestURI);
+
         try {
-            checkAuthorizationHeader(authHeader);   // header 가 올바른 형식인지 체크
+            // 헤더 유효성 검사
+            checkAuthorizationHeader(authHeader);
+
+            // 토큰 추출
             String token = JwtUtils.getTokenFromHeader(authHeader);
-            // 토큰 만료 확인
-            if (JwtUtils.isExpired(token)) {
-                throw new CustomExpiredJwtException(401, "TOKEN_EXPIRED", "토큰이 만료되었습니다");
-            }
-            //토큰 검증 및 claims 가져오기
-            Map<String, Object> claims = JwtUtils.validateToken(token);
 
-            //토큰 만료까지 남은 시간
-            long remainingMinutes = JwtUtils.tokenRemainTime((Integer) claims.get("exp"));
+            long remainingMinutes = JwtUtils.getRemainingMinutes(token);
+
             log.info("Token remaining time: {} minutes", remainingMinutes);
-
-            //토큰 만료 5분 전에 로그 출력
-            if (remainingMinutes <= 5) {
+            if (remainingMinutes >= 0 && remainingMinutes <= 5) {
                 log.warn("Access Token is about to expire in {} minutes", remainingMinutes);
             }
-            //토큰 인증 객체 생성
-            Authentication authentication = JwtUtils.getAuthentication(token);
 
-            log.info("authentication = {}", authentication);
-            //인증 객체를 SecurityContext 에 저장
+            // 인증 객체 생성 및 SecurityContext에 저장
+            Authentication authentication = JwtUtils.getAuthentication(token);
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
-            filterChain.doFilter(request, response);    // 다음 필터로 이동
-        } catch (Exception e) {
-            Gson gson = new Gson();
-            String json = "";
-            if (e instanceof CustomExpiredJwtException) {
-                json = gson.toJson(Map.of("Token_Expired", e.getMessage()));
-            } else {
-                json = gson.toJson(Map.of("error", e.getMessage()));
-            }
+            // 다음 필터로 이동
+            filterChain.doFilter(request, response);
 
-            response.setContentType("application/json; charset=UTF-8");
-            PrintWriter printWriter = response.getWriter();
-            printWriter.println(json);
-            printWriter.close();
+        } catch (CustomJwtException e) {
+            handleJwtError(response, e.getStatusCode(), e.getErrorCode(), e.getMessage());
+        } catch (ExpiredJwtException e) {
+            handleJwtError(response, 401, "TOKEN_EXPIRED", "토큰이 만료되었습니다.");
+        } catch (JwtException e) {
+            handleJwtError(response, 401, "INVALID_TOKEN", "유효하지 않은 JWT 토큰입니다.");
+        } catch (Exception e) {
+            handleJwtError(response, 500, "INTERNAL_SERVER_ERROR", "서버 내부 오류: " + e.getMessage());
         }
     }
 }

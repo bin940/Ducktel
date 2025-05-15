@@ -26,6 +26,11 @@ public class JwtUtils {
     private static final String SECRET_KEY = "1234567891234567891234123123123132";
 
 
+    private static SecretKey getKey() {
+        return Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8));
+    }
+
+    // Bearer 토큰 파싱
     public static String getTokenFromHeader(String header) {
         if (header == null || !header.startsWith("Bearer ")) {
             throw new IllegalArgumentException("잘못된 Authorization 헤더 형식");
@@ -34,20 +39,19 @@ public class JwtUtils {
     }
 
 
-
-    public static String generateToken(Map<String, Object> claims, int validTime) {
-        SecretKey key = Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8));
-
+    // 토큰 발급
+    public static String generateToken(Map<String, Object> claims, int validMinutes) {
         return Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(new Date())
-                .setExpiration(Date.from(ZonedDateTime.now().plusMinutes(validTime).toInstant()))
-                .signWith(key)
+                .setExpiration(Date.from(ZonedDateTime.now().plusMinutes(validMinutes).toInstant()))
+                .signWith(getKey())
                 .compact();
     }
+
     //SecurityContextHolder 에 저장
     public static Authentication getAuthentication(String token) {
-        Map<String, Object> claims = validateToken(token);
+        Claims claims = validateToken(token);
 
         // GUID 형태로 변경 보안성
         String email = (String) claims.get("email");
@@ -58,52 +62,33 @@ public class JwtUtils {
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());
 
-
-
         User user = User.builder().email(email).username(name).role(roles).build();
 
-        PrincipalDetailDTO principalDetailDTO = new PrincipalDetailDTO(user, authorities);
-
-        return new UsernamePasswordAuthenticationToken(principalDetailDTO, "", authorities);
+        return new UsernamePasswordAuthenticationToken(
+                new PrincipalDetailDTO(user, authorities), "", authorities);
     }
     // jwt userId 따로 사용
     public static UUID getUserIdFromToken(String token) {
-        if (token == null) {
-            throw new CustomJwtException(401,"INVALID_TOKEN", "토큰이 null입니다.");
+        Claims claims = validateToken(token);
+        String userIdStr = claims.get("userId", String.class);
+        if (userIdStr == null) {
+            throw new CustomJwtException(401, "INVALID_TOKEN", "userId 정보가 없습니다.");
         }
-        try {
-            Claims claims = Jwts.parserBuilder()
-                    .setSigningKey(SECRET_KEY.getBytes())
-                    .build()
-                    .parseClaimsJws(token)
-                    .getBody();
-            String userIdStr = claims.get("userId", String.class);
-            UUID userId = UUID.fromString(userIdStr);
-            System.out.println("JwtUtils - 추출된 userId: " + userId); // 디버깅
-            if (userId == null) {
-                throw new CustomJwtException(401,"INVALID_TOKEN", "토큰에 userId가 없습니다.");
-            }
-            return userId;
-        } catch (Exception e) {
-            throw new CustomJwtException(401,"INVALID_TOKEN", "토큰 파싱 실패: " + e.getMessage());
-        }
-    }
-    public static String getTokenType(String token) {
-        try {
-            Map<String, Object> claims = validateToken(token);
-            String type = (String) claims.get("type");
-            if (type == null) {
-                throw new CustomJwtException(401,"INVALID_TOKEN", "토큰에 type 정보가 없습니다.");
-            }
-            return type;
-        } catch (CustomExpiredJwtException | CustomJwtException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new CustomJwtException(401,"INVALID_TOKEN", "토큰 파싱 실패: " + e.getMessage());
-        }
+        return UUID.fromString(userIdStr);
     }
 
-    public static Map<String, Object> validateToken(String token) {
+
+    public static String getTokenType(String token) {
+        Claims claims = validateToken(token);
+        String type = claims.get("type", String.class);
+        if (type == null) {
+            throw new CustomJwtException(401, "INVALID_TOKEN", "토큰에 type 정보가 없습니다.");
+        }
+        return type;
+    }
+
+
+    public static Claims validateToken(String token) {
         try {
             SecretKey key = Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8));
             return Jwts.parserBuilder()
@@ -113,36 +98,31 @@ public class JwtUtils {
                     .getBody();
 
         } catch (ExpiredJwtException e) {
-            throw new CustomExpiredJwtException(401, "TOKEN_EXPIRED", "토큰이 만료되었습니다.", e);
+            throw new CustomExpiredJwtException(401, "TOKEN_EXPIRED", "토큰이 만료되었습니다.");
         } catch (JwtException e) {
-            throw new CustomJwtException(401, "INVALID_TOKEN", "유효하지 않은 JWT 토큰입니다: " + e.getMessage());
+            throw new CustomJwtException(401, "INVALID_TOKEN", "유효하지 않은 JWT 토큰입니다: ");
         } catch (Exception e) {
-            throw new CustomJwtException(401, "JWT_VERIFICATION_FAILED", "JWT 검증 실패: " + e.getMessage());
+            throw new CustomJwtException(401, "JWT_VERIFICATION_FAILED", "JWT 검증 실패: " );
         }
     }
 
     // 토큰이 만료되었는지 판단
     public static boolean isExpired(String token) {
         try {
-            validateToken(token);
+            Claims claims = validateToken(token);
+            return claims.getExpiration().before(new Date());
         } catch (CustomExpiredJwtException e) {
-            return true;//  CustomExpiredJwtException이 발생하면 만료된 토큰으로 판단
-        } catch (CustomJwtException e) {
-            Throwable cause = e.getCause();
-            if (cause instanceof ExpiredJwtException) {
-                return true; //CustomJwtException 내부 cause가 ExpiredJwtException이면 만료된 토큰으로 판단
-            }
+            return true;
+        } catch (Exception e) {
+            return false; // 다른 검증 실패는 만료 로 판단하지 않음
         }
-        return false;
     }
 
     // 토큰의 남은 만료시간 계산
-    public static long tokenRemainTime(Integer expTime) {
-        if (expTime == null) {
-            throw new IllegalArgumentException("expTime이 null입니다.");
-        }
-        Date expDate = new Date((long) expTime * (1000));
-        long remainMs = expDate.getTime() - System.currentTimeMillis();
-        return remainMs / (1000 * 60);
+    public static long getRemainingMinutes(String token) {
+        Claims claims = validateToken(token);
+        Date expiration = claims.getExpiration();
+        long diffMs = expiration.getTime() - System.currentTimeMillis();
+        return diffMs / (1000 * 60);
     }
 }
