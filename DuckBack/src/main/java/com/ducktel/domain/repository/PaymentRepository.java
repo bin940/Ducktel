@@ -1,8 +1,12 @@
 package com.ducktel.domain.repository;
 
 import com.ducktel.domain.entity.Payment;
+import com.ducktel.domain.enums.PaymentStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface PaymentRepository extends JpaRepository<Payment, Long> {
+import java.time.LocalDateTime;
+import java.util.List;
 
+public interface PaymentRepository extends JpaRepository<Payment, Long> {
+    List<Payment> findByStatusAndCreatedAtBefore(PaymentStatus status, LocalDateTime beforeTime);
 }

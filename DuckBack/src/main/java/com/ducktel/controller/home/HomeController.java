@@ -33,7 +33,7 @@ public class HomeController {
         HomeResponseDTO categoryHomeData = homeService.getSubHomeData(category);
         log.info("카테고리별 홈 데이터 조회 성공: {}", categoryHomeData);
 
-        return ResponseEntity.ok(new ResponseDTO<>(200, null, "Sub-Home Data 조회 성공", categoryHomeData));
+        return ResponseEntity.ok(new ResponseDTO<>(200, null, "CategoryHome Data 조회 성공", categoryHomeData));
     }
     @GetMapping("/api/home/{category}/{location}")
     public ResponseEntity<ResponseDTO<?>> getLocationHomeData(@PathVariable("category") String category,

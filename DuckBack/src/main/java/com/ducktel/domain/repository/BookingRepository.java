@@ -18,7 +18,15 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             "WHERE b.room.roomId IN :roomIds " +
             "AND (b.checkIn <= :checkOut AND b. checkOut>= :checkIn) " +
             "GROUP BY b.room.roomId")
+
     List<Object[]> findBookedRooms(@Param("roomIds") List<Long> roomIds,
                                    @Param("checkIn") LocalDate startDate,
                                    @Param("checkOut") LocalDate endDate);
+
+    @Query("SELECT COUNT(b) FROM Booking b " +
+            "WHERE b.room.roomId = :roomId " +
+            "AND (b.checkIn < :checkOut AND b.checkOut > :checkIn)")
+    long countByRoomAndDateRange(@Param("roomId") Long roomId,
+                                 @Param("checkIn") LocalDate checkIn,
+                                 @Param("checkOut") LocalDate checkOut);
 }

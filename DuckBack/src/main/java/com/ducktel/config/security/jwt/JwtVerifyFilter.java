@@ -27,7 +27,7 @@ public class JwtVerifyFilter extends OncePerRequestFilter {
             "/favicon.ico",
             "/login",
             "/api/home",
-            "/api/sub-home/**",
+            "/api/home/**",
             "/api/places/**"
     };
 

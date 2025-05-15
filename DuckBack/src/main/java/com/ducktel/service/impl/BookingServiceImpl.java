@@ -4,6 +4,7 @@ import com.ducktel.domain.entity.*;
 import com.ducktel.domain.repository.*;
 import com.ducktel.dto.AccommodationDTO;
 import com.ducktel.dto.BookingDetailDTO;
+import com.ducktel.dto.PaymentRequestDTO;
 import com.ducktel.dto.RoomDTO;
 import com.ducktel.exception.CustomException;
 import com.ducktel.service.BookingService;
@@ -21,6 +22,7 @@ import java.util.stream.Collectors;
 public class BookingServiceImpl implements BookingService {
     private final BookingRepository bookingRepository;
     private final RoomRepository roomRepository;
+    private final UserRepository userRepository;
     private final RoomImageRepository roomImageRepository;
     private  final AccommodationRepository accommodationRepository;
     private  final AccommodationImageRepository accommodationImageRepository;
@@ -73,6 +75,38 @@ public class BookingServiceImpl implements BookingService {
 
         log.info("Booking 삭제 후 남은 예약 조회 성공: userId={}, remainingBookingCount={}", userId, bookingDetails.size());
         return bookingDetails;
+    }
+
+    @Override
+    public Booking createBooking(PaymentRequestDTO dto) {
+
+        Room room = roomRepository.findById(dto.getRoomId())
+                .orElseThrow(() -> new CustomException(404, "NOT_FOUND", "객실 정보를 찾을 수 없습니다. ID: " + dto.getRoomId()));
+
+        User user = userRepository.findById(dto.getUserId())
+                .orElseThrow(() -> new CustomException(404, "NOT_FOUND", "사용자 정보를 찾을 수 없습니다. ID: " + dto.getUserId()));
+
+        long reservedCount = bookingRepository.countByRoomAndDateRange(
+                room.getRoomId(),
+                dto.getCheckInDate(),
+                dto.getCheckOutDate()
+        );
+
+        if (reservedCount >= room.getStock(reservedCount)) {
+            throw new CustomException(409, "FULLY_BOOKED", "해당 날짜에는 예약 가능한 객실이 없습니다.");
+        }
+
+        Booking booking = new Booking();
+        booking.setUser(user);
+        booking.setRoom(room);
+        booking.setAccommodation(room.getAccommodationId());
+        booking.setCheckIn(dto.getCheckInDate());
+        booking.setCheckOut(dto.getCheckOutDate());
+        booking.setName(dto.getName());
+        booking.setPhoneNumber(dto.getPhoneNumber());
+        booking.setPaymentCompleted(true);
+
+        return bookingRepository.save(booking);
     }
 
     private List<BookingDetailDTO> convertToBookingDetailDTOList(List<Booking> bookings) {

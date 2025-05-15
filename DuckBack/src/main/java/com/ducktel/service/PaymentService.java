@@ -5,4 +5,5 @@ import com.ducktel.dto.PaymentResponseDTO;
 
 public interface PaymentService {
     PaymentResponseDTO processPayment(PaymentRequestDTO paymentRequestDTO);
+
 }

@@ -1,11 +1,15 @@
 package com.ducktel.service.impl;
 
-import com.ducktel.domain.entity.*;
+import com.ducktel.domain.entity.Accommodation;
+import com.ducktel.domain.entity.Payment;
+import com.ducktel.domain.entity.Room;
+import com.ducktel.domain.entity.User;
 import com.ducktel.domain.enums.PaymentStatus;
 import com.ducktel.domain.repository.*;
 import com.ducktel.dto.PaymentRequestDTO;
 import com.ducktel.dto.PaymentResponseDTO;
 import com.ducktel.exception.CustomException;
+import com.ducktel.service.BookingService;
 import com.ducktel.service.PaymentService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +24,7 @@ import java.util.UUID;
 @Slf4j
 public class PaymentServiceImpl implements PaymentService {
     private final PaymentRepository paymentRepository;
-    private final BookingRepository bookingRepository;
+    private final BookingService bookingService;
     private final UserRepository userRepository;
     private final AccommodationRepository accommodationRepository;
     private final RoomRepository roomRepository;
@@ -51,18 +55,6 @@ public class PaymentServiceImpl implements PaymentService {
                 });
         log.debug("객실 조회 성공: roomId={}", room.getRoomId());
 
-        Booking booking = new Booking();
-        booking.setUser(user);
-        booking.setAccommodation(accommodation);
-        booking.setRoom(room);
-        booking.setName(paymentRequestDTO.getName());
-        booking.setPhoneNumber(paymentRequestDTO.getPhoneNumber());
-        booking.setCheckIn(paymentRequestDTO.getCheckInDate());
-        booking.setCheckOut(paymentRequestDTO.getCheckOutDate());
-        booking.setPaymentCompleted(false);
-        bookingRepository.save(booking);
-        log.info("예약 생성 성공: bookingId={}", booking.getBookingId());
-
         Payment payment = new Payment();
         payment.setUserId(user);
         payment.setAmount(paymentRequestDTO.getAmount());
@@ -73,22 +65,22 @@ public class PaymentServiceImpl implements PaymentService {
         log.info("결제 생성 성공: paymentId={}, status={}", payment.getPaymentId(), payment.getStatus());
 
         boolean isSuccess = new Random().nextBoolean();
+
         if (isSuccess) {
             payment.setStatus(PaymentStatus.SUCCESS);
             payment.setPgTransactionId(UUID.randomUUID().toString());
             paymentRepository.save(payment);
 
-            booking.setPaymentCompleted(true);
-            bookingRepository.save(booking);
-            log.info("결제 성공 처리 완료: paymentId={}, bookingId={}", payment.getPaymentId(), booking.getBookingId());
+            bookingService.createBooking(paymentRequestDTO);
 
+
+            log.info("예약 생성 및 결제 성공 처리 완료: paymentId={}", payment.getPaymentId());
             return new PaymentResponseDTO("SUCCESS", payment.getPgTransactionId());
         } else {
             payment.setStatus(PaymentStatus.FAILED);
             paymentRepository.save(payment);
             log.warn("결제 실패 처리 완료: paymentId={}", payment.getPaymentId());
-
-            return new PaymentResponseDTO("FAILED", null);
+            throw new CustomException(500, "PAYMENT_FAILED", "결제에 실패했습니다. 다시 시도해주세요.");
         }
     }
 }

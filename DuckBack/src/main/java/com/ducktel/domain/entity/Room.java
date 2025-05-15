@@ -53,4 +53,9 @@ public class Room {
     @ManyToOne
     @JoinColumn(name = "accommodation_id", nullable = false)
     private Accommodation accommodationId;
+
+    public int getStock(long reservedCount) {
+        return (int)(this.totalRooms - reservedCount);
+    }
+
 }
