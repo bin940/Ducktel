@@ -120,7 +120,8 @@ public class SecurityConfig {
                     log.error("일반 로그인 실패: {}", exception.getMessage());
                     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                     response.setContentType("application/json");
-                    response.getWriter().write("{\"error\": \"Login Failed\"}");
+                    response.setCharacterEncoding("UTF-8");
+                    response.getWriter().write("{\"error\": \"로그인 실패\"}");
                 })
         );
         // OAuth2 설정

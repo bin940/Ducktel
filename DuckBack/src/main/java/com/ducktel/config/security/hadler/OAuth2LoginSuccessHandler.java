@@ -15,6 +15,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Map;
+import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
@@ -48,7 +49,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         response.sendRedirect(redirectUrl);
     }
 
-    private void saveRefreshToken(String userId, String refreshToken) {
+    private void saveRefreshToken(UUID userId, String refreshToken) {
         RefreshToken refreshEntity = new RefreshToken();
         refreshEntity.setUserId(userId);
         refreshEntity.setToken(refreshToken);

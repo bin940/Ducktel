@@ -15,6 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -41,7 +42,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDTO getProfile(String userId) {
+    public UserDTO getProfile(UUID userId) {
         log.debug("유저 프로필 조회 요청: userId={}", userId);
 
         User user = userRepository.findById(userId)
@@ -55,7 +56,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDTO updateProfile(String userId, UserDTO userData) {
+    public UserDTO updateProfile(UUID userId, UserDTO userData) {
         log.debug("유저 프로필 업데이트 요청: userId={}, userData={}", userId, userData);
 
         User user = userRepository.findById(userId)
@@ -72,7 +73,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String deleteProfile(String userId) {
+    public String deleteProfile(UUID userId) {
         log.debug("유저 프로필 삭제 요청: userId={}", userId);
 
         if (!userRepository.existsById(userId)) {
@@ -86,17 +87,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String passWordReset(String userId, String newPassword) {
+    public String passWordReset(UUID userId, String newPassword) {
         log.debug("비밀번호 재설정 요청: userId={}", userId);
 
         int insert = userRepository.updatePassword(userId, passwordEncoder.encode(newPassword));
         log.info("비밀번호 재설정 성공: userId={}, 변경된 레코드 수={}", userId, insert);
 
-        return "비밀번호가 변경되었습니다.";
+        return "비밀번호가 변경 되었습니다.";
     }
 
     @Override
-    public String toggleLike(String userId, Long accommodationId) {
+    public String toggleLike(UUID userId, Long accommodationId) {
         log.debug("좋아요 토글 요청: userId={}, accommodationId={}", userId, accommodationId);
 
         User user = userRepository.findById(userId)

@@ -8,10 +8,11 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
 public interface BookingRepository extends JpaRepository<Booking, Long> {
 
-    List<Booking> findByUser_UserId(String userId);
+    List<Booking> findByUser_UserId(UUID userId);
     @Query("SELECT b.room.roomId, COUNT(b) " +
             "FROM Booking b " +
             "WHERE b.room.roomId IN :roomIds " +

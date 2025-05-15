@@ -33,17 +33,17 @@ public class UserDTO {
     @NotBlank(message = "전화번호를 입력해주세요.", groups = {CreateUser.class, UpdateUser.class})
     @Size(min = 10, max = 11, message = "전화번호는 10자 이상 11자 이하로 입력해주세요.")
     private String phoneNumber;
-    @NotBlank(message = "전화번호를 입력해주세요.", groups = {CreateUser.class, UpdateUser.class})
+    @NotBlank(message = "이메일을 입력해주세요.", groups = {CreateUser.class, UpdateUser.class})
     @Email(message = "이메일 형식에 맞게 입력해주세요.")
     private String email;
     @NotBlank(message = "이름을 입력해주세요.", groups = {CreateUser.class, UpdateUser.class})
-    @Size(min =2, max =8, message= "이름은 2자 이상 8자 이아로 입력해주세요.")
+    @Size(min =2, max =8, message= "이름은 2자 이상 8자 이하로 입력해주세요.")
     private String name;
 
 
 
     public User createUser(PasswordEncoder passwordEncoder) {
-        String userIdUUID = UUID.randomUUID().toString();
+        UUID userIdUUID = UUID.randomUUID();
         User user = new User();
         user.setUserId(userIdUUID);
         user.setUsername(this.username);

@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,7 +27,7 @@ public class BookingServiceImpl implements BookingService {
 
 
     @Override
-    public List<BookingDetailDTO> getBookingDetail(String userId) {
+    public List<BookingDetailDTO> getBookingDetail(UUID userId) {
         log.debug("BookingDetail 조회 요청: userId={}", userId);
 
         List<Booking> bookings = bookingRepository.findByUser_UserId(userId);
@@ -56,7 +57,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingDetailDTO> deleteBooking(String userId, Long bookingId) {
+    public List<BookingDetailDTO> deleteBooking(UUID userId, Long bookingId) {
         log.debug("Booking 삭제 요청: userId={}, bookingId={}", userId, bookingId);
 
         if (!bookingRepository.existsById(bookingId)) {

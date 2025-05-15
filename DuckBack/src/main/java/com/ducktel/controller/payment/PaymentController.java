@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.UUID;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/payment")
@@ -31,7 +33,7 @@ public class PaymentController {
         String token = jwtService.getTokenFromHeader(request.getHeader("Authorization"));
         log.debug("Authorization 헤더에서 추출한 토큰: {}", token);
 
-        String userId = jwtService.getUserIdFromToken(token);
+        UUID userId = jwtService.getUserIdFromToken(token);
         log.info("토큰에서 추출한 사용자 ID: {}", userId);
 
         if (userId == null) {

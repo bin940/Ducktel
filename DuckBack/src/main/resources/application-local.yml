@@ -1,7 +1,7 @@
 spring:
   datasource:
-    url: jdbc:mysql://db:3306/Ducktel?useSSL=false&allowPublicKeyRetrieval=true
-    username: DucktelAdmin
+    url: jdbc:mysql://localhost:3306/duckhotel?useSSL=false&allowPublicKeyRetrieval=true
+    username: duckadmin
     password: Ducktel123
     driver-class-name: com.mysql.cj.jdbc.Driver
 
@@ -10,3 +10,6 @@ logging:
     root: DEBUG
     org.springframework.web: DEBUG
     com.ducktelback: DEBUG
+    sun.rmi.transport.tcp: warn
+    sun.rmi.loader: warn
+    javax.management.remote.rmi: warn

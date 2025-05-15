@@ -14,6 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/users")
@@ -36,7 +38,7 @@ public class UserController {
         String token = jwtService.getTokenFromHeader(request.getHeader("Authorization"));
         log.debug("Authorization 헤더에서 추출한 토큰: {}", token);
 
-        String userId = jwtService.getUserIdFromToken(token);
+        UUID userId = jwtService.getUserIdFromToken(token);
 
         if (userId == null) {
             log.warn("유효하지 않은 Authorization 헤더로 요청: token={}", token);
@@ -52,7 +54,7 @@ public class UserController {
         log.debug("프로필 업데이트 요청 데이터: {}", userData);
 
         String token = jwtService.getTokenFromHeader(request.getHeader("Authorization"));
-        String userId = jwtService.getUserIdFromToken(token);
+        UUID userId = jwtService.getUserIdFromToken(token);
 
         UserDTO user = userService.updateProfile(userId, userData);
         log.info("프로필 업데이트 성공: userId={}", userId);
@@ -60,7 +62,7 @@ public class UserController {
         return ResponseEntity.ok(new ResponseDTO<>(200, null, "유저정보 변경 성공", user));
     }
     @DeleteMapping("/profile/{userId}")
-    public ResponseEntity<String> deleteProfile(@PathVariable("userId") String userId){
+    public ResponseEntity<String> deleteProfile(@PathVariable("userId") UUID userId){
         String result =userService.deleteProfile(userId);
         return ResponseEntity.ok(result);
     }
@@ -70,7 +72,7 @@ public class UserController {
         log.debug("비밀번호 재설정 요청 데이터: {}", user);
 
         String token = jwtService.getTokenFromHeader(request.getHeader("Authorization"));
-        String userId = jwtService.getUserIdFromToken(token);
+        UUID userId = jwtService.getUserIdFromToken(token);
         String newPassword = user.getPassword();
         String result =userService.passWordReset(userId, newPassword);
         return ResponseEntity.ok(result);
@@ -82,7 +84,7 @@ public class UserController {
         log.debug("좋아요 토글 요청: accommodationId={}", accommodationId);
 
         String token = jwtService.getTokenFromHeader(request.getHeader("Authorization"));
-        String userId = jwtService.getUserIdFromToken(token);
+        UUID userId = jwtService.getUserIdFromToken(token);
         String result = userService.toggleLike(userId, accommodationId);
         return ResponseEntity.ok(result);
     }

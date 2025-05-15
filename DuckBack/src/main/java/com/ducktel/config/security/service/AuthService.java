@@ -8,8 +8,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -31,18 +33,27 @@ public class AuthService {
 
         // 토큰에서 사용자 정보 추출
         Map<String, Object> claims = JwtUtils.validateToken(refreshToken);
-        String userId = (String) claims.get("userId");
-        String username = (String) claims.get("username");
-        log.debug("토큰에서 사용자 정보 추출 성공: userId={}, username={}", userId, username);
+        String userIdstr = (String) claims.get("userId");
+        UUID userId = UUID.fromString(userIdstr);
+        log.debug("토큰에서 사용자 정보 추출 성공: userId={}", userId);
 
-        // 새 accessToken 생성
+        // 새 Token 생성
         String newAccessToken = JwtUtils.generateToken(
-                Map.of("userId", userId, "username", username, "roles", "ROLE_USER", "type", "access"),
+                Map.of("userId", userId, "roles", "ROLE_USER", "type", "access"),
                 60
+        );
+        String newRefreshToken = JwtUtils.generateToken(
+                Map.of("userId", userId, "type", "refresh"),
+                60 * 24 * 7
+        );
+        refreshTokenRepository.updateTokenByUserId(
+                userId,
+                newRefreshToken,
+                LocalDateTime.now().plusDays(7)
         );
         log.info("새 AccessToken 생성 성공: userId={}", userId);
 
-        return Map.of("accessToken", newAccessToken);
+        return Map.of("accessToken", newAccessToken, "refreshToken", newRefreshToken);
     }
 
     public void logout(String refreshToken) {
@@ -54,6 +65,7 @@ public class AuthService {
             log.info("로그아웃 성공: refreshToken 삭제 완료");
         } else {
             log.warn("로그아웃 실패: 저장된 토큰 없음");
+            throw new CustomJwtException(401, "INVALID_REFRESH_TOKEN", "저장된 리프레시 토큰이 존재하지 않습니다.");
         }
     }
 }

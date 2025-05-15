@@ -1,6 +1,6 @@
 spring:
-  application:
-    name: Ducktel
+  profiles:
+    active: local
 
   jpa:
     show-sql: true

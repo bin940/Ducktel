@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Map;
+import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
@@ -51,7 +52,7 @@ public class FormLoginSuccessHandler implements AuthenticationSuccessHandler {
         sendJsonResponse(response, responseDTO);
     }
 
-    private void saveRefreshToken(String userId, String refreshToken) {
+    private void saveRefreshToken(UUID userId, String refreshToken) {
         RefreshToken refreshEntity = new RefreshToken();
         refreshEntity.setUserId(userId);
         refreshEntity.setToken(refreshToken);

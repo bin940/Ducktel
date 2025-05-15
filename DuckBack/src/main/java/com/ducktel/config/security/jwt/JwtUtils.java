@@ -18,10 +18,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.time.ZonedDateTime;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class JwtUtils {
@@ -70,7 +67,7 @@ public class JwtUtils {
         return new UsernamePasswordAuthenticationToken(principalDetailDTO, "", authorities);
     }
     // jwt userId 따로 사용
-    public static String getUserIdFromToken(String token) {
+    public static UUID getUserIdFromToken(String token) {
         if (token == null) {
             throw new CustomJwtException(401,"INVALID_TOKEN", "토큰이 null입니다.");
         }
@@ -80,7 +77,8 @@ public class JwtUtils {
                     .build()
                     .parseClaimsJws(token)
                     .getBody();
-            String userId = claims.get("userId", String.class);
+            String userIdStr = claims.get("userId", String.class);
+            UUID userId = UUID.fromString(userIdStr);
             System.out.println("JwtUtils - 추출된 userId: " + userId); // 디버깅
             if (userId == null) {
                 throw new CustomJwtException(401,"INVALID_TOKEN", "토큰에 userId가 없습니다.");

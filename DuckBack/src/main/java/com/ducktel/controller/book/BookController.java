@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 
 @RestController
@@ -26,7 +27,7 @@ public class BookController{
     public ResponseEntity<ResponseDTO<?>> getBookingDetail(HttpServletRequest request) {
         log.debug("Authorization 헤더에서 토큰 추출 시도");
         String token = jwtService.getTokenFromHeader(request.getHeader("Authorization"));
-        String userId = jwtService.getUserIdFromToken(token);
+        UUID userId = jwtService.getUserIdFromToken(token);
         log.info("토큰에서 추출한 사용자 ID: {}", userId);
 
         List<BookingDetailDTO> bookingDetail = bookingService.getBookingDetail(userId);
@@ -49,7 +50,7 @@ public class BookController{
     public ResponseEntity<ResponseDTO<?>> deleteBooking(@PathVariable("bookingId") Long bookingId, HttpServletRequest request) {
         log.debug("Authorization 헤더에서 토큰 추출 시도");
         String token = jwtService.getTokenFromHeader(request.getHeader("Authorization"));
-        String userId = jwtService.getUserIdFromToken(token);
+        UUID userId = jwtService.getUserIdFromToken(token);
         log.info("토큰에서 추출한 사용자 ID: {}", userId);
         log.info("예약 취소 요청 ID: {}", bookingId);
 
