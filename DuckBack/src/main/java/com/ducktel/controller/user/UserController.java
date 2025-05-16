@@ -4,6 +4,8 @@ import com.ducktel.dto.ResponseDTO;
 import com.ducktel.dto.UserDTO;
 import com.ducktel.service.JwtService;
 import com.ducktel.service.UserService;
+import com.ducktel.validation.CreateUser;
+import com.ducktel.validation.PasswordReset;
 import com.ducktel.validation.UpdateUser;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -25,7 +27,7 @@ public class UserController {
     private final JwtService jwtService;
 
     @PostMapping("/register")
-    public ResponseEntity<ResponseDTO<?>> registerUser(@Valid @RequestBody UserDTO userDTO) {
+    public ResponseEntity<ResponseDTO<?>> registerUser(@Validated(CreateUser.class) @RequestBody UserDTO userDTO) {
         log.debug("회원가입 요청 데이터: {}", userDTO);
 
         String userName =userService.registerUser(userDTO);
@@ -50,7 +52,7 @@ public class UserController {
         return ResponseEntity.ok(new ResponseDTO<>(200, null, "유저정보 조회 성공", user));
     }
     @PutMapping("/profile")
-    public ResponseEntity<ResponseDTO<?>> updateProfile(HttpServletRequest request, @Validated({UpdateUser.class, Default.class}) @RequestBody UserDTO userData){
+    public ResponseEntity<ResponseDTO<?>> updateProfile(HttpServletRequest request, @Validated(UpdateUser.class) @RequestBody UserDTO userData){
         log.debug("프로필 업데이트 요청 데이터: {}", userData);
 
         String token = jwtService.getTokenFromHeader(request.getHeader("Authorization"));
@@ -62,20 +64,20 @@ public class UserController {
         return ResponseEntity.ok(new ResponseDTO<>(200, null, "유저정보 변경 성공", user));
     }
     @DeleteMapping("/profile/{userId}")
-    public ResponseEntity<String> deleteProfile(@PathVariable("userId") UUID userId){
+    public ResponseEntity<ResponseDTO<?>> deleteProfile(@PathVariable("userId") UUID userId){
         String result =userService.deleteProfile(userId);
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(new ResponseDTO<>(200, null, result, null));
     }
 
     @PostMapping("/password-reset")
-    public ResponseEntity<String> passWordReset(HttpServletRequest request, @RequestBody UserDTO user) {
+    public ResponseEntity<ResponseDTO<?>> passWordReset(HttpServletRequest request, @Validated(PasswordReset.class) @RequestBody UserDTO user) {
         log.debug("비밀번호 재설정 요청 데이터: {}", user);
 
         String token = jwtService.getTokenFromHeader(request.getHeader("Authorization"));
         UUID userId = jwtService.getUserIdFromToken(token);
         String newPassword = user.getPassword();
         String result =userService.passWordReset(userId, newPassword);
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(new ResponseDTO<>(200, null, result, null));
 
     }
     @PostMapping("/likes")

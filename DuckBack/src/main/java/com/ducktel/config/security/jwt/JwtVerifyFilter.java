@@ -49,6 +49,7 @@ public class JwtVerifyFilter extends OncePerRequestFilter {
     private void handleJwtError(HttpServletResponse response, int status, String errorCode, String message) throws IOException {
         response.setStatus(status);
         response.setContentType("application/json");
+        response.setContentType("application/json; charset=UTF-8");
         ResponseDTO<?> error = new ResponseDTO<>(status, errorCode, message, null);
         new ObjectMapper().writeValue(response.getWriter(), error);
     }
