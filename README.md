@@ -70,6 +70,7 @@ ducktel/
 ---
 
 ## 🌐 API 엔드포인트
+[전체 API 문서 보기 (Postman)](https://documenter.getpostman.com/view/40259480/2sB2qUnQEB)
 
 | 메서드 | 엔드포인트                              | 설명                     | 컨트롤러          |
 |--------|-----------------------------------------|--------------------------|-------------------|
@@ -90,8 +91,55 @@ ducktel/
 | POST   | `/api/users/password-reset`            | 비밀번호 재설정 요청     | UserController    |
 
 ---
-<<<<<<< HEAD
+## ⚙️ 설치 및 실행
+
+---
+
+### 1. 필수 환경
+
+- Java 17 이상
+- Node.js 18 이상
+- Docker + Docker Compose
+- MySQL 8 이상 또는 Oracle XE
+
+---
+
+### 2. 프로젝트 클론
+
+```bash
+git clone https://github.com/bin940/Ducktel.git
+cd Ducktel
+```
+### 3. Docker 실행
+
+```bash
+docker-compose up --build
+```
+### 4. 수동 실행
+
+#### 4.1 백엔드 실행
+```bash
+cd DuckBack
+./gradlew bootRun
+```
+#### 4.2 프론트엔드 실행
+```bash
+cd duckfront
+npm install
+npm run dev
+```
+
+### 5. 데이터베이스 설정
+```properties
+# 백엔드 DB 설정 예시
+SPRING_DATASOURCE_URL=jdbc:mysql://localhost:3306/ducktel
+SPRING_DATASOURCE_USERNAME=class4
+SPRING_DATASOURCE_PASSWORD=1234
+```
+
+
+---
 ## 🌍 ERD
 ![ERD](./images/Ducktel.png)
 =======
->>>>>>> oldduckback/main
+

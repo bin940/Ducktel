@@ -7,13 +7,24 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(CustomException.class)
     public ResponseEntity<ResponseDTO<?>> customException(CustomException e) {
-        return ResponseEntity.ok(new ResponseDTO<>(400, e.getErrorCode(), e.getMessage(), null));
+        return ResponseEntity.ok(new ResponseDTO<>(e.getStatusCode(), e.getErrorCode(), e.getMessage(), null));
+    }
+
+    @ExceptionHandler(CustomJwtException.class)
+    public ResponseEntity<ResponseDTO<?>> customException(CustomJwtException e) {
+        return ResponseEntity.ok(new ResponseDTO<>(e.getStatusCode(), e.getErrorCode(), e.getMessage(), null));
+    }
+
+    @ExceptionHandler(CustomExpiredJwtException.class)
+    public ResponseEntity<ResponseDTO<?>> customException(CustomExpiredJwtException e) {
+        return ResponseEntity.ok(new ResponseDTO<>(e.getStatusCode(), e.getErrorCode(), e.getMessage(), null));
     }
 
     @ExceptionHandler(Exception.class)
@@ -21,10 +32,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity.ok(new ResponseDTO<>(500, "INTERNAL_SERVER_ERROR", e.getMessage(), null));
     }
 
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<ResponseDTO<?>> handleRuntimeException(RuntimeException e) {
-        return ResponseEntity.ok(new ResponseDTO<>(500, "INTERNAL_SERVER_ERROR", e.getMessage(), null));
-    }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ResponseDTO<?>> handleValidationExceptions(MethodArgumentNotValidException e) {
@@ -43,6 +50,8 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ResponseDTO<?>> handleMissingServletRequestParameterException(MissingServletRequestParameterException e) {
         return ResponseEntity.ok(new ResponseDTO<>(400,"MISSING_PARAMETER", e.getParameterName() + " is required", null));
     }
+
+
 
 
 }

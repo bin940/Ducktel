@@ -1,0 +1,70 @@
+spring:
+  profiles:
+    active: local
+
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: none
+    open-in-view: false
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+
+  security:
+    user:
+      name: admin
+      password: admin123
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 1032567509724-ahogel3e4oeo24av77qdojm7dp5rb2bq.apps.googleusercontent.com
+            client-secret: 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
+            scope: profile,email
+            redirect-uri: "{baseUrl}/login/oauth2/code/google"
+            authorization-grant-type: authorization_code
+            client-name: Google
+          kakao:
+            client-id: c0fbadf3cabc5996f91acf5d387bdf19
+            client-secret: wHtBoR8Lsoi38gW1yr2kmtGudKNoGCUn
+            scope: profile_nickname,account_email
+            redirect-uri: "{baseUrl}/login/oauth2/code/kakao"
+            authorization-grant-type: authorization_code
+            client-authentication-method: client_secret_post
+            client-name: Kakao
+
+        provider:
+          google:
+            authorization-uri: https://accounts.google.com/o/oauth2/v2/auth
+            token-uri: https://oauth2.googleapis.com/token
+            user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
+            user-name-attribute: sub
+          kakao:
+            authorization-uri: https://kauth.kakao.com/oauth/authorize
+            token-uri: https://kauth.kakao.com/oauth/token
+            user-info-uri: https://kapi.kakao.com/v2/user/me
+            user-name-attribute: id
+
+
+  devtools:
+    restart:
+      enabled: true
+      additional-paths: src/main/java
+    livereload:
+      enabled: true
+
+server:
+  port: 8090
+
+logging:
+  level:
+    root: INFO
+    org.springframework.web: DEBUG
+    com.ducktelback: INFO
+    org.springframework.security: DEBUG
+    org.springframework.boot.devtools: DEBUG
+
+minio:
+  url: http://minio:9000
+  access-key: minioadmin
+  secret-key: minioadmin
+  bucket: hotel-images

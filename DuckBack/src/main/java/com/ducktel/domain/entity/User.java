@@ -13,6 +13,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.UUID;
 
 @Entity
 @Data
@@ -22,7 +23,7 @@ import java.util.Collections;
 @Slf4j
 public class User implements UserDetails {
     @Id
-    private String userId;
+    private UUID userId;
 
     @Column(name = "username")
     private String username;

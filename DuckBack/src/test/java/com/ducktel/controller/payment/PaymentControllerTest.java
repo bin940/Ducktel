@@ -17,6 +17,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -43,8 +44,9 @@ class PaymentControllerTest {
 
     @Test
     void createPayment_success() throws Exception {
+        UUID uuid = UUID.fromString("c90c9ef9-5d3c-49f5-9a04-752cc06f5234");
         String token = "Bearer test.jwt.token";
-        String userId = "user123";
+        UUID userId = uuid;
 
         PaymentRequestDTO requestDTO = new PaymentRequestDTO();
         requestDTO.setAccommodationId(1L);

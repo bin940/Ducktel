@@ -7,6 +7,7 @@ import com.ducktel.domain.repository.*;
 import com.ducktel.dto.PaymentRequestDTO;
 import com.ducktel.dto.PaymentResponseDTO;
 import com.ducktel.exception.CustomException;
+import com.ducktel.service.impl.PaymentServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,6 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -41,8 +43,9 @@ class PaymentServiceImplTest {
 
     @BeforeEach
     void setUp() {
+        UUID uuid = UUID.fromString("c90c9ef9-5d3c-49f5-9a04-752cc06f5234");
         requestDTO = new PaymentRequestDTO();
-        requestDTO.setUserId("user123");
+        requestDTO.setUserId(uuid);
         requestDTO.setAccommodationId(1L);
         requestDTO.setRoomId(2L);
         requestDTO.setName("홍길동");
@@ -53,7 +56,7 @@ class PaymentServiceImplTest {
         requestDTO.setPaymentMethod("CARD");
 
         user = new User();
-        user.setUserId("user123");
+        user.setUserId(uuid);
 
         room = new Room();
         room.setRoomId(2L);
@@ -74,7 +77,8 @@ class PaymentServiceImplTest {
 
     @Test
     void processPayment_UserNotFound() {
-        when(userRepository.findById("user123")).thenReturn(Optional.empty());
+        UUID uuid = UUID.fromString("c90c9ef9-5d3c-49f5-9a04-752cc06f5234");
+        when(userRepository.findById(uuid)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> paymentService.processPayment(requestDTO))
                 .isInstanceOf(CustomException.class)
@@ -83,7 +87,8 @@ class PaymentServiceImplTest {
 
     @Test
     void processPayment_AccommodationNotFound() {
-        when(userRepository.findById("user123")).thenReturn(Optional.of(user));
+        UUID uuid = UUID.fromString("c90c9ef9-5d3c-49f5-9a04-752cc06f5234");
+        when(userRepository.findById(uuid)).thenReturn(Optional.of(user));
         when(accommodationRepository.findById(1L)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> paymentService.processPayment(requestDTO))
@@ -93,7 +98,8 @@ class PaymentServiceImplTest {
 
     @Test
     void processPayment_RoomNotFound() {
-        when(userRepository.findById("user123")).thenReturn(Optional.of(user));
+        UUID uuid = UUID.fromString("c90c9ef9-5d3c-49f5-9a04-752cc06f5234");
+        when(userRepository.findById(uuid)).thenReturn(Optional.of(user));
         when(accommodationRepository.findById(1L)).thenReturn(Optional.of(accommodation));
         when(roomRepository.findById(2L)).thenReturn(Optional.empty());
 
@@ -103,7 +109,8 @@ class PaymentServiceImplTest {
     }
 
     private void mockRepositories() {
-        when(userRepository.findById("user123")).thenReturn(Optional.of(user));
+        UUID uuid = UUID.fromString("c90c9ef9-5d3c-49f5-9a04-752cc06f5234");
+        when(userRepository.findById(uuid)).thenReturn(Optional.of(user));
         when(accommodationRepository.findById(1L)).thenReturn(Optional.of(accommodation));
         when(roomRepository.findById(2L)).thenReturn(Optional.of(room));
     }

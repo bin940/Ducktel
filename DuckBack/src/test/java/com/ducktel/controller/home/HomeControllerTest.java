@@ -81,7 +81,7 @@ class HomeControllerTest {
         String category = "unknown";
 
         when(homeService.getSubHomeData(category))
-                .thenThrow(new CustomException("INVALID_CATEGORY", "존재하지 않는 카테고리"));
+                .thenThrow(new CustomException(400,"INVALID_CATEGORY", "존재하지 않는 카테고리"));
 
         mockMvc.perform(get("/api/sub-home/{category}", category))
                 .andExpect(status().isOk())
@@ -97,7 +97,7 @@ class HomeControllerTest {
         String location = " ";
 
         when(homeService.getLocationHomeData(category, location))
-                .thenThrow(new CustomException("INVALID_LOCATION", "위치 값이 유효하지 않습니다"));
+                .thenThrow(new CustomException(400,"INVALID_LOCATION", "위치 값이 유효하지 않습니다"));
 
         mockMvc.perform(get("/api/sub-home/{category}/{location}", category, location))
                 .andExpect(status().isOk())

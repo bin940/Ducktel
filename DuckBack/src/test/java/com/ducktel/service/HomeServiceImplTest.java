@@ -5,6 +5,7 @@ import com.ducktel.domain.entity.AccommodationImage;
 import com.ducktel.domain.repository.AccommodationImageRepository;
 import com.ducktel.domain.repository.AccommodationRepository;
 import com.ducktel.dto.HomeResponseDTO;
+import com.ducktel.service.impl.HomeServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

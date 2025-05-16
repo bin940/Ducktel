@@ -7,6 +7,7 @@ import com.ducktel.domain.entity.RoomImage;
 import com.ducktel.domain.repository.*;
 import com.ducktel.dto.PlacesDTO;
 import com.ducktel.exception.CustomException;
+import com.ducktel.service.impl.PlacesServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

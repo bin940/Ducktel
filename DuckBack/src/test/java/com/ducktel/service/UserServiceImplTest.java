@@ -4,6 +4,7 @@ import com.ducktel.domain.entity.User;
 import com.ducktel.domain.repository.UserRepository;
 import com.ducktel.dto.UserDTO;
 import com.ducktel.exception.CustomException;
+import com.ducktel.service.impl.UserServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,6 +15,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -36,6 +38,7 @@ class UserServiceImplTest {
 
     @BeforeEach
     void setUp() {
+        UUID uuid = UUID.fromString("c90c9ef9-5d3c-49f5-9a04-752cc06f5234");
         userDTO = new UserDTO();
         userDTO.setUsername("testuser");
         userDTO.setPassword("password123");
@@ -44,7 +47,7 @@ class UserServiceImplTest {
         userDTO.setPhoneNumber("01012345678");
 
         user = new User();
-        user.setUserId("user123");
+        user.setUserId(uuid);
         user.setUsername("testuser");
         user.setName("홍길동");
         user.setEmail("test@example.com");
@@ -74,8 +77,9 @@ class UserServiceImplTest {
 
     @Test
     void getProfile_Success() {
+        UUID uuid = UUID.fromString("c90c9ef9-5d3c-49f5-9a04-752cc06f5234");
         User user = User.builder()
-                .userId("user123")
+                .userId(uuid)
                 .username("testuser")
                 .email("test@example.com")
                 .phoneNumber("01012345678")
@@ -83,9 +87,9 @@ class UserServiceImplTest {
                 .role("ROLE_USER")
                 .build();
 
-        when(userRepository.findById("user123")).thenReturn(Optional.of(user));
+        when(userRepository.findById(uuid)).thenReturn(Optional.of(user));
 
-        UserDTO result = userService.getProfile("user123");
+        UserDTO result = userService.getProfile(uuid);
 
         assertThat(result.getUsername()).isEqualTo("testuser");
         assertThat(result.getEmail()).isEqualTo("test@example.com");
@@ -93,26 +97,28 @@ class UserServiceImplTest {
 
     @Test
     void getProfile_NotFound() {
-        when(userRepository.findById("user123")).thenReturn(Optional.empty());
+        UUID uuid = UUID.fromString("c90c9ef9-5d3c-49f5-9a04-752cc06f5234");
+        when(userRepository.findById(uuid)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> userService.getProfile("user123"))
-                .isInstanceOf(UsernameNotFoundException.class);
+        assertThatThrownBy(() -> userService.getProfile(uuid))
+                .isInstanceOf(CustomException.class);
     }
 
     @Test
     void updateProfile_Success() {
+        UUID uuid = UUID.fromString("c90c9ef9-5d3c-49f5-9a04-752cc06f5234");
         User user = new User();
-        user.setUserId("user123");
+        user.setUserId(uuid);
         user.setName("기존이름");
 
         UserDTO userDTO = new UserDTO();
         userDTO.setEmail("new@example.com");
         userDTO.setPhoneNumber("01011112222");
 
-        when(userRepository.findById("user123")).thenReturn(Optional.of(user));
+        when(userRepository.findById(uuid)).thenReturn(Optional.of(user));
         when(userRepository.save(any())).thenReturn(user);
 
-        UserDTO result = userService.updateProfile("user123", userDTO);
+        UserDTO result = userService.updateProfile(uuid, userDTO);
 
         assertThat(result.getEmail()).isEqualTo("new@example.com");
         assertThat(result.getPhoneNumber()).isEqualTo("01011112222");
@@ -120,28 +126,31 @@ class UserServiceImplTest {
 
     @Test
     void deleteProfile_Success() {
-        when(userRepository.existsById("user123")).thenReturn(true);
+        UUID uuid = UUID.fromString("c90c9ef9-5d3c-49f5-9a04-752cc06f5234");
+        when(userRepository.existsById(uuid)).thenReturn(true);
 
-        String result = userService.deleteProfile("user123");
+        String result = userService.deleteProfile(uuid);
 
-        verify(userRepository).deleteById("user123");
+        verify(userRepository).deleteById(uuid);
         assertThat(result).isEqualTo("삭제되었습니다.");
     }
 
     @Test
     void deleteProfile_NotFound() {
-        when(userRepository.existsById("user123")).thenReturn(false);
+        UUID uuid = UUID.fromString("c90c9ef9-5d3c-49f5-9a04-752cc06f5234");
+        when(userRepository.existsById(uuid)).thenReturn(false);
 
-        assertThatThrownBy(() -> userService.deleteProfile("user123"))
+        assertThatThrownBy(() -> userService.deleteProfile(uuid))
                 .isInstanceOf(CustomException.class);
     }
 
     @Test
     void passWordReset_Success() {
+        UUID uuid = UUID.fromString("c90c9ef9-5d3c-49f5-9a04-752cc06f5234");
         when(passwordEncoder.encode("newpass")).thenReturn("encodedPass");
-        when(userRepository.updatePassword("user123", "encodedPass")).thenReturn(1);
+        when(userRepository.updatePassword(uuid, "encodedPass")).thenReturn(1);
 
-        String result = userService.passWordReset("user123", "newpass");
+        String result = userService.passWordReset(uuid, "newpass");
 
         assertThat(result).isEqualTo("비밀번호가 변경 되었습니다.");
     }

@@ -10,12 +10,13 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.UUID;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class PaymentRequestDTO {
-    private String userId;
+    private UUID userId;
     private Long accommodationId;
     private Long roomId;
     @NotBlank(message = "이름을 입력해주세요.")
