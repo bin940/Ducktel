@@ -5,6 +5,8 @@ import com.ducktel.config.security.hadler.OAuth2LoginSuccessHandler;
 import com.ducktel.config.security.jwt.JwtVerifyFilter;
 import com.ducktel.config.security.service.CustomOauth2UserService;
 import com.ducktel.config.security.service.CustomUserDetailsService;
+import com.ducktel.dto.ResponseDTO;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -118,10 +120,11 @@ public class SecurityConfig {
                 .successHandler(formLoginSuccessHandler)
                 .failureHandler((request, response, exception) -> {
                     log.error("일반 로그인 실패: {}", exception.getMessage());
-                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    response.setStatus(HttpServletResponse.SC_OK);
+                    ResponseDTO<String> responseDTO = new ResponseDTO<>(401, "LOGIN_FAILED", "로그인 실패", null);
                     response.setContentType("application/json");
                     response.setCharacterEncoding("UTF-8");
-                    response.getWriter().write("{\"error\": \"로그인 실패\"}");
+                    response.getWriter().write(new ObjectMapper().writeValueAsString(responseDTO));
                 })
         );
         // OAuth2 설정

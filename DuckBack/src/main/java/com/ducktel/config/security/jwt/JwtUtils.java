@@ -2,7 +2,6 @@ package com.ducktel.config.security.jwt;
 
 import com.ducktel.domain.entity.User;
 import com.ducktel.dto.PrincipalDetailDTO;
-import com.ducktel.exception.CustomException;
 import com.ducktel.exception.CustomExpiredJwtException;
 import com.ducktel.exception.CustomJwtException;
 import io.jsonwebtoken.Claims;
