@@ -1,4 +1,4 @@
-package com.ducktel.domain.enums;
+package com.ducktel.enums;
 
 public enum PaymentStatus {
     PENDING,  // 결제 대기

@@ -1,6 +1,6 @@
 package com.ducktel.domain.entity;
 
-import com.ducktel.domain.enums.PaymentStatus;
+import com.ducktel.enums.PaymentStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
