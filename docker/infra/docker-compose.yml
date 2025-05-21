@@ -1,19 +1,5 @@
 version: '3.8'
-
 services:
-  backend:
-    build: ./DuckBack
-    ports:
-      - "8090:8090"
-    depends_on:
-      - db
-      - minio
-
-  frontend:
-    build: ./duckfront
-    ports:
-      - "80:80"
-
   db:
     image: mysql:8
     ports:
@@ -25,7 +11,24 @@ services:
       MYSQL_PASSWORD: Ducktel123
     volumes:
       - db-data:/var/lib/mysql
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ../../init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+
+  kafka:
+    image: bitnami/kafka:latest
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_CFG_PROCESS_ROLES: controller,broker
+      KAFKA_CFG_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_KRAFT_CLUSTER_ID: my-cluster-id
+    volumes:
+      - kafka-data:/bitnami/kafka
+
 
   minio:
     image: minio/minio

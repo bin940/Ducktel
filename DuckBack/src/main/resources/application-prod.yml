@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:mysql://prod-db:3306/Ducktel?useSSL=false
+    url: jdbc:mysql://db:3306/Ducktel?useSSL=false
     username: DucktelAdmin
     password: Ducktel123
     driver-class-name: com.mysql.cj.jdbc.Driver
