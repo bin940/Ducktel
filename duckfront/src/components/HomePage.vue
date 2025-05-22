@@ -3,7 +3,8 @@
     <header>
       <h2>홈페이지</h2>
     </header>
-    <div>
+    <div class="filter-row">
+      <div class="filter-item">
       <label for="category">카테고리 선택:</label>
       <select id="category" v-model="selectedCategory" @change="goToSubHome">
         <option value="" disabled>카테고리를 선택하세요</option>
@@ -13,6 +14,7 @@
         <option value="게스트하우스">게스트하우스</option>
         <option value="모텔">모텔</option>
       </select>
+    </div>
     </div>
 
     <!-- 할인 숙소 -->
@@ -106,6 +108,7 @@ export default {
     return {
       homeData: null,
       selectedCategory: "",
+      selectedLocation: "",
       checkInDate: new Date().toISOString().split("T")[0],
       checkOutDate: new Date(Date.now() + 86400000).toISOString().split("T")[0],
     };
@@ -133,15 +136,18 @@ export default {
         console.error("홈 데이터 조회 오류:", error.response?.data || error.message);
       }
     },
+
     logout() {
       localStorage.removeItem("accessToken");
       localStorage.removeItem("refreshToken");
       this.$router.push("/");
     },
-    goToSubHome() {
-      if (this.selectedCategory) {
-        this.$router.push(`/sub-home/${this.selectedCategory}`);
-      }
+    async goToSubHome() {
+      if (!this.selectedCategory) return;
+      this.$router.push({
+        name: "CategoryHome",
+        params: { category: this.selectedCategory }
+      });
     },
     goToPlaces(accommodationId) {
       console.log("Navigating to:", `/places/${accommodationId}/${this.checkInDate}/${this.checkOutDate}`);
@@ -156,6 +162,30 @@ export default {
   max-width: 1200px;
   margin: 50px auto;
   padding: 20px;
+}
+.filter-row {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+  margin-bottom: 24px;
+}
+
+.filter-item {
+  display: flex;
+  align-items: center;
+}
+
+.filter-item label {
+  display: inline-block;
+  min-width: 110px;
+  white-space: nowrap;
+  margin-right: 8px;
+  font-weight: 500;
+}
+
+.filter-item select {
+  min-width: 160px;
+  padding: 5px;
 }
 .accommodations-container {
   display: flex;

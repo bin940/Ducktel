@@ -1,7 +1,7 @@
 package com.ducktel.service.impl;
 
 import com.ducktel.domain.entity.Payment;
-import com.ducktel.domain.enums.PaymentStatus;
+import com.ducktel.enums.PaymentStatus;
 import com.ducktel.domain.repository.PaymentRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;

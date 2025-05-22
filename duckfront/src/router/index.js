@@ -5,7 +5,7 @@ import RegisterForm from "../components/RegisterForm.vue";
 import MyPage from "../components/MyPage.vue";
 import UserProfile from "../components/UserProfile.vue";
 import UserBooking from "../components/UserBooking.vue";
-import SubHome from "../components/SubHome.vue";
+import SubHome from "../components/CategoryHome.vue";
 import LocationHome from "../components/LocationHome.vue";
 import Places from "../components/PlaceDetail.vue"; 
 import PaymentPage from "../components/PaymentPage.vue";
@@ -17,8 +17,8 @@ const routes = [
   { path: "/mypage", name: "MyPage", component: MyPage },
   { path: "/profile", name: "Profile", component: UserProfile, meta: { requiresAuth: true } },
   { path: "/booking", name: "Booking", component: UserBooking, meta: { requiresAuth: true } },
-  { path: "/sub-home/:category", name: "SubHome", component: SubHome },
-  { path: "/sub-home/:category/:location", name: "LocationHome", component: LocationHome },
+  { path: "/home/:category", name: "CategoryHome", component: SubHome },
+  { path: "/home/:category/:location", name: "LocationHome", component: LocationHome },
   { path: "/places/:accommodationId/:checkInDate/:checkOutDate", name: "PlaceDetail", component: Places },
   { path: "/payment", name: "PaymentPage", component: PaymentPage },
 ];

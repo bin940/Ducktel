@@ -1,7 +1,7 @@
 package com.ducktel.domain.repository;
 
 import com.ducktel.domain.entity.Payment;
-import com.ducktel.domain.enums.PaymentStatus;
+import com.ducktel.enums.PaymentStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDateTime;

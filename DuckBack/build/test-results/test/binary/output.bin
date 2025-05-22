@@ -1,1 +1,2 @@
-�18:05:09.837 [Test worker] INFO com.ducktel.service.impl.UserServiceImpl -- 비밀번호 재설정 성공: userId=user123, 변경된 레코드 수=1
+�20:07:37.227 [Test worker] INFO com.ducktel.service.impl.PaymentServiceImpl -- 결제 생성 성공: paymentId=null, status=PENDING
+|20:07:37.234 [Test worker] WARN com.ducktel.service.impl.PaymentServiceImpl -- 결제 실패 처리 완료: paymentId=null

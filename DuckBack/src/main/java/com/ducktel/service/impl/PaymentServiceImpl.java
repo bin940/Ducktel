@@ -4,7 +4,7 @@ import com.ducktel.domain.entity.Accommodation;
 import com.ducktel.domain.entity.Payment;
 import com.ducktel.domain.entity.Room;
 import com.ducktel.domain.entity.User;
-import com.ducktel.domain.enums.PaymentStatus;
+import com.ducktel.enums.PaymentStatus;
 import com.ducktel.domain.repository.*;
 import com.ducktel.dto.PaymentRequestDTO;
 import com.ducktel.dto.PaymentResponseDTO;

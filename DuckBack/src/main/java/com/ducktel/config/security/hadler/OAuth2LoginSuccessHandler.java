@@ -41,7 +41,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
         String loginType = user.getProvider().toUpperCase();
 
-        String redirectUrl = "http://localhost:8081/login" +
+        String redirectUrl = "https://www.ducktel.uk/login" +
                 "?accessToken=" + accessToken +
                 "&refreshToken=" + refreshToken +
                 "&loginType=" + loginType;
