@@ -53,10 +53,15 @@ export default {
   created() {
     this.fetchLocationHomeData();
   },
+  watch: {
+    '$route.params.location': 'fetchLocationHomeData'
+  },
   methods: {
     async fetchLocationHomeData() {
       try {
-        const response = await api.get(`/api/sub-home/${this.category}/${this.location}`);
+        const response = await api.get(
+          `/api/home/${encodeURIComponent(this.category)}/${encodeURIComponent(this.location)}`
+        );
         const result = response.data;
         if (result.status === 200 && !result.errorCode) {
           this.locationHomeData = result.data;

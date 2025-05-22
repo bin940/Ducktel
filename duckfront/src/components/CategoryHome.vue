@@ -64,25 +64,35 @@ export default {
   created() {
     this.fetchSubHomeData();
   },
+  watch: {
+          '$route.params.category': 'fetchSubHomeData'
+  },
   methods: {
     async fetchSubHomeData() {
+      this.selectedLocation = "";
       try {
-        const response = await api.get(`/api/sub-home/${this.category}`);
+        const response = await api.get(`/api/home/${encodeURIComponent(this.category)}`);
         const result = response.data;
         if (result.status === 200 && !result.errorCode) {
           this.subHomeData = result.data;
-          console.log("Sub-Home 데이터 조회 성공:", this.subHomeData);
+          console.log("Home 데이터 조회 성공:", this.subHomeData);
         } else {
-          console.error("Sub-Home 데이터 조회 실패:", result);
+          console.error("Home 데이터 조회 실패:", result);
         }
       } catch (error) {
-        console.error("Sub-Home 데이터 조회 오류:", error.response?.data || error.message);
+        console.error("Home 데이터 조회 오류:", error.response?.data || error.message);
       }
     },
     goToLocationHome() {
-      if (this.selectedLocation) {
-        this.$router.push(`/sub-home/${this.category}/${this.selectedLocation}`);
-      }
+      if (!this.selectedLocation) return;
+
+      this.$router.push({
+        name: "LocationHome",
+        params: {
+          category: this.category,
+          location: this.selectedLocation
+        }
+      });
     },
     goToPlaces(accommodationId) {
       this.$router.push(`/places/${accommodationId}/${this.checkInDate}/${this.checkOutDate}`);

@@ -2,8 +2,11 @@ version: '3.8'
 
 services:
   backend:
-    image: myorg/ducktel-backend:latest
-    restart: always
+    build:
+      context: ../../DuckBack
+      dockerfile: Dockerfile
+    image: ducktel-backend:latest
+
     ports:
       - "8090:8090"
     environment:
@@ -21,12 +24,6 @@ services:
       - kafka
       - minio
 
-  frontend:
-    image: myorg/ducktel-frontend:latest
-    restart: always
-    ports:
-      - "80:80"
-
   db:
     image: mysql:8
     restart: always
@@ -38,6 +35,9 @@ services:
     volumes:
       - db-data:/var/lib/mysql
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+
+    ports:
+      - "3307:3306"
 
   redis:
     image: redis:alpine
@@ -78,3 +78,4 @@ services:
 volumes:
   db-data:
   minio-data:
+  kafka-data:

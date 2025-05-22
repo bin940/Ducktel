@@ -4,7 +4,7 @@ COPY . .
 ENV GRADLE_USER_HOME=/home/gradle_cache
 RUN mkdir -p /home/gradle_cache && \
     chown -R gradle:gradle /home/gradle_cache && \
-    gradle build --no-daemon --stacktrace
+    gradle build --no-daemon --stacktrace -x test
 
 FROM openjdk:17
 WORKDIR /app

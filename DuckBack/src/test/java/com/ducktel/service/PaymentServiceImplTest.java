@@ -28,7 +28,7 @@ import static org.mockito.Mockito.*;
 class PaymentServiceImplTest {
 
     @Mock private PaymentRepository paymentRepository;
-    @Mock private BookingRepository bookingRepository;
+    @Mock private BookingService bookingService;
     @Mock private UserRepository userRepository;
     @Mock private AccommodationRepository accommodationRepository;
     @Mock private RoomRepository roomRepository;
