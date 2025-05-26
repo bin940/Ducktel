@@ -1,9 +1,8 @@
 package com.ducktel.config.security.hadler;
 
 import com.ducktel.config.security.jwt.JwtUtils;
-import com.ducktel.domain.entity.RefreshToken;
 import com.ducktel.domain.entity.User;
-import com.ducktel.domain.repository.RefreshTokenRepository;
+import com.ducktel.domain.repository.RefreshTokenRedisRepository;
 import com.ducktel.dto.PrincipalDetailDTO;
 import com.ducktel.dto.ResponseDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -15,14 +14,13 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
 public class FormLoginSuccessHandler implements AuthenticationSuccessHandler {
-    private final RefreshTokenRepository refreshTokenRepository;
+    private final RefreshTokenRedisRepository refreshTokenRedisRepository;
     private final ObjectMapper objectMapper;
 
     @Override
@@ -33,7 +31,7 @@ public class FormLoginSuccessHandler implements AuthenticationSuccessHandler {
 
         String accessToken = JwtUtils.generateToken(
                 Map.of("userId", user.getUserId(), "roles", user.getRole(), "type", "access"),
-                60
+                15
         );
         String refreshToken = JwtUtils.generateToken(
                 Map.of("userId", user.getUserId(), "type", "refresh"),
@@ -42,9 +40,15 @@ public class FormLoginSuccessHandler implements AuthenticationSuccessHandler {
 
         saveRefreshToken(user.getUserId(), refreshToken);
 
+        // refreshToken을 HttpOnly 쿠키로 설정
+        jakarta.servlet.http.Cookie refreshCookie = new jakarta.servlet.http.Cookie("refreshToken", refreshToken);
+        refreshCookie.setHttpOnly(true);
+        refreshCookie.setPath("/");
+        refreshCookie.setMaxAge(60 * 60 * 24 * 7);
+        response.addCookie(refreshCookie);
+
         Map<String, String> responseMap = Map.of(
                 "accessToken", accessToken,
-                "refreshToken", refreshToken,
                 "loginType", "LOCAL"
         );
 
@@ -53,11 +57,7 @@ public class FormLoginSuccessHandler implements AuthenticationSuccessHandler {
     }
 
     private void saveRefreshToken(UUID userId, String refreshToken) {
-        RefreshToken refreshEntity = new RefreshToken();
-        refreshEntity.setUserId(userId);
-        refreshEntity.setToken(refreshToken);
-        refreshEntity.setExpiryDate(LocalDateTime.now().plusDays(7));
-        refreshTokenRepository.save(refreshEntity);
+        refreshTokenRedisRepository.save(userId, refreshToken, 7L);
     }
 
     private void sendJsonResponse(HttpServletResponse response, ResponseDTO<?> responseDTO) throws IOException {
