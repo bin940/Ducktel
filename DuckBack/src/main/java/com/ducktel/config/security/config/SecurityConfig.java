@@ -1,6 +1,7 @@
 package com.ducktel.config.security.config;
 
 import com.ducktel.config.security.cookie.HttpCookieOAuth2AuthorizationRequestRepository;
+import com.ducktel.config.security.filter.ProtoLoggingFilter;
 import com.ducktel.config.security.hadler.FormLoginSuccessHandler;
 import com.ducktel.config.security.hadler.OAuth2LoginSuccessHandler;
 import com.ducktel.config.security.jwt.JwtVerifyFilter;
@@ -66,7 +67,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         //CORS 설정 객체 생성
         CorsConfiguration corsConfiguration = new CorsConfiguration();
-        corsConfiguration.setAllowedOriginPatterns(List.of("*")); //허용 도메인
+        corsConfiguration.setAllowedOrigins(List.of("https://www.ducktel.uk")); //허용 도메인
         corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS")); // 허용 HTTP 메서드
         corsConfiguration.setAllowedHeaders(List.of("Authorization", "Cache-Control", "Content-Type"));// 허용 헤더
         corsConfiguration.setAllowCredentials(true);// 쿠키 인증 허용 여부
@@ -153,6 +154,7 @@ public class SecurityConfig {
         );
         http.addFilterBefore(new JwtVerifyFilter(), UsernamePasswordAuthenticationFilter.class);
         http.addFilterAfter(new JwtVerifyFilter(), OAuth2LoginAuthenticationFilter.class);
+        http.addFilterAfter(new ProtoLoggingFilter(), JwtVerifyFilter.class);
 
 
         return http.build();

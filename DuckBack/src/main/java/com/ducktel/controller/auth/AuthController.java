@@ -1,5 +1,6 @@
 package com.ducktel.controller.auth;
 
+import com.ducktel.config.security.cookie.util.CookieUtils;
 import com.ducktel.config.security.service.AuthService;
 import com.ducktel.dto.ResponseDTO;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +22,8 @@ public class AuthController {
 
     @PostMapping("/refresh")
     public ResponseEntity<?> refresh(
-            @CookieValue(value = "refreshToken", required = false) String refreshToken) {
+            @CookieValue(value = "refreshToken", required = false) String refreshToken,
+            jakarta.servlet.http.HttpServletResponse response) {
         log.debug("토큰 갱신 요청: refreshToken={}", refreshToken);
 
         if (refreshToken == null) {
@@ -33,13 +35,7 @@ public class AuthController {
         String newRefreshToken = tokens.get("refreshToken");
 
         // 새 refreshToken을 HttpOnly 쿠키로 재설정
-        jakarta.servlet.http.Cookie refreshCookie = new jakarta.servlet.http.Cookie("refreshToken", newRefreshToken);
-        refreshCookie.setHttpOnly(true);
-        refreshCookie.setPath("/");
-        refreshCookie.setMaxAge(60 * 60 * 24 * 7);
-        ((jakarta.servlet.http.HttpServletResponse) ((org.springframework.web.context.request.ServletRequestAttributes)
-                org.springframework.web.context.request.RequestContextHolder.currentRequestAttributes())
-                .getResponse()).addCookie(refreshCookie);
+        CookieUtils.addCookie(response, "refreshToken", newRefreshToken, 60 * 60 * 24 * 7);
 
         log.info("토큰 갱신 성공: accessToken={}", newAccessToken);
 
@@ -61,14 +57,7 @@ public class AuthController {
         }
 
         // refreshToken 쿠키 만료 처리
-        jakarta.servlet.http.Cookie refreshCookie = new jakarta.servlet.http.Cookie("refreshToken", null);
-        refreshCookie.setPath("/");
-        refreshCookie.setDomain("ducktel.uk");
-        refreshCookie.setHttpOnly(true);
-        refreshCookie.setSecure(true);
-        refreshCookie.setMaxAge(0);
-
-        response.addCookie(refreshCookie);
+        CookieUtils.deleteCookie(response, "refreshToken");
 
         if ("LOCAL".equalsIgnoreCase(loginType)) {
             authService.logout(refreshToken);
