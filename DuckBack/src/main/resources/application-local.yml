@@ -13,3 +13,14 @@ logging:
     sun.rmi.transport.tcp: warn
     sun.rmi.loader: warn
     javax.management.remote.rmi: warn
+    org.apache.kafka.clients: WARN
+    org.apache.kafka.common: WARN
+    org.apache.kafka: WARN
+
+#test
+#logging:
+#  level:
+#    root: INFO
+#    com.ducktel.kafka: DEBUG
+#    org.apache.kafka.clients: INFO
+#    org.springframework.web: WARN

@@ -65,7 +65,7 @@ public class PaymentServiceImpl implements PaymentService {
         log.info("결제 생성 성공: paymentId={}, status={}", payment.getPaymentId(), payment.getStatus());
 
         boolean isSuccess = new Random().nextBoolean();
-
+        log.debug("결제 성공 여부: {}", isSuccess);
         if (isSuccess) {
             payment.setStatus(PaymentStatus.SUCCESS);
             payment.setPgTransactionId(UUID.randomUUID().toString());

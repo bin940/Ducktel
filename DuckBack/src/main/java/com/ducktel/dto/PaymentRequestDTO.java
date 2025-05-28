@@ -1,10 +1,9 @@
 package com.ducktel.dto;
 
-import com.ducktel.validation.CreateUser;
-import com.ducktel.validation.UpdateUser;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -15,6 +14,7 @@ import java.util.UUID;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class PaymentRequestDTO {
     private UUID userId;
     private Long accommodationId;
