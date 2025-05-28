@@ -1,10 +1,9 @@
 package com.ducktel.controller.payment;
 
 import com.ducktel.dto.PaymentRequestDTO;
-import com.ducktel.dto.PaymentResponseDTO;
 import com.ducktel.dto.ResponseDTO;
+import com.ducktel.kafka.KafkaProducer;
 import com.ducktel.service.JwtService;
-import com.ducktel.service.PaymentService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +22,7 @@ import java.util.UUID;
 @Slf4j
 public class PaymentController {
 
-    private final PaymentService paymentService;
+    private final KafkaProducer kafkaProducer;
     private final JwtService jwtService;
 
     @PostMapping("/create")
@@ -42,10 +41,10 @@ public class PaymentController {
         }
         paymentRequestDTO.setUserId(userId);
         log.debug("결제 요청 데이터에 사용자 ID 설정 완료: {}", paymentRequestDTO);
-        
-        PaymentResponseDTO paymentRetrieve =  paymentService.processPayment(paymentRequestDTO);
-        log.info("결제 처리 성공: {}", paymentRetrieve);
-        return ResponseEntity.ok(new ResponseDTO<>(200, null, "예약 성공", paymentRetrieve));
+
+        kafkaProducer.sendPayment(paymentRequestDTO);
+
+        return ResponseEntity.ok(new ResponseDTO<>(200, null, "결제 요청을 Kafka로 전송 완료", null));
 
     }
 }

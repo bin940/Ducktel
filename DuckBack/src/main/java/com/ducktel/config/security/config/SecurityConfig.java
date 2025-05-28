@@ -7,6 +7,7 @@ import com.ducktel.config.security.jwt.JwtVerifyFilter;
 import com.ducktel.config.security.service.CustomOauth2UserService;
 import com.ducktel.config.security.service.CustomUserDetailsService;
 import com.ducktel.dto.ResponseDTO;
+import com.ducktel.service.JwtService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -44,6 +45,7 @@ public class SecurityConfig {
     private final CustomOauth2UserService customOAuth2UserService;
     private final FormLoginSuccessHandler formLoginSuccessHandler;
     private final OAuth2LoginSuccessHandler oauth2LoginSuccessHandler;
+    private final JwtService jwtService;
 
     //password BCrypt으로 변환
     @Bean
@@ -151,8 +153,8 @@ public class SecurityConfig {
                     response.getWriter().write("{\"error\": \"OAuth2 Login Failed\"}");
                 })
         );
-        http.addFilterBefore(new JwtVerifyFilter(), UsernamePasswordAuthenticationFilter.class);
-        http.addFilterAfter(new JwtVerifyFilter(), OAuth2LoginAuthenticationFilter.class);
+        http.addFilterBefore(new JwtVerifyFilter(jwtService), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterAfter(new JwtVerifyFilter(jwtService), OAuth2LoginAuthenticationFilter.class);
 
 
         return http.build();
