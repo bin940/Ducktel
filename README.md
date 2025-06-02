@@ -1,8 +1,10 @@
 # Ducktel - 숙박 예약 서비스
 
-**Ducktel**은 Spring Boot와 Vue3를 기반으로 개발된 풀스택 숙박 예약 플랫폼입니다.  
-OAuth2 로그인, JWT 인증, 숙소/객실 관리, 예약 및 결제 기능 등을 포함하며, 사용자 친화적인 예약 경험을 제공하는 것을 목표로 제작되었습니다.  
-추가적으로 Redis를 활용한 **세션 관리, 캐싱 처리 및 리프레쉬 토큰 관리**, Kafka를 통한 메시지 처리, Vercel을 이용한 프론트엔드 배포를 지원합니다.
+**Ducktel**은 Spring Boot와 Vue 3를 기반으로 개발된 풀스택 숙박 예약 플랫폼입니다.  
+OAuth2 로그인, JWT 기반 인증, 숙소 및 객실 관리, 예약 및 결제 기능을 통해 사용자 중심의 예약 경험을 제공합니다.
+
+Redis를 이용한 리프레시 토큰 저장 및 인증 처리, Kafka를 활용한 메시지 처리 흐름 테스트도 포함되어 있으며,  
+프론트엔드는 Vercel을 통해 정적 배포되며, Cloudflare Tunnel을 사용해 로컬 백엔드 서버를 외부에서 접근 가능하도록 구성했습니다.
 
 ---
 
@@ -157,6 +159,7 @@ SPRING_DATASOURCE_PASSWORD=1234
 
 ---
 ##  ERD
-[ERD](./images/DucktelDB.png)
-=======
+<p style="text-align: center;">
+  <img src="./images/DucktelDB.png" alt="Ducktel ERD" style="width: 600px;">
+</p>
 
