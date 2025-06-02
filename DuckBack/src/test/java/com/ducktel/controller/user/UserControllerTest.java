@@ -19,6 +19,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -36,8 +37,6 @@ class UserControllerTest {
     @MockBean
     private UserService userService;
 
-    @MockBean
-    private BookingService bookingService;
 
     @MockBean
     private JwtService jwtService;
@@ -47,18 +46,18 @@ class UserControllerTest {
 
     @Test
     void registerUser_Success() throws Exception {
-        UserDTO userDTO = UserDTO.builder()
-                .username("testuser")
-                .password("password123")
-                .phoneNumber("01012345678")
-                .email("test@example.com")
-                .name("홍길동")
-                .build();
+        String json = "{"
+                + "\"username\":\"testuser\","
+                + "\"password\":\"password123\","
+                + "\"phoneNumber\":\"01012345678\","
+                + "\"email\":\"test@example.com\","
+                + "\"name\":\"홍길동\""
+                + "}";
         when(userService.registerUser(any(UserDTO.class))).thenReturn("testuser");
 
         mockMvc.perform(post("/api/users/register")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(userDTO)))
+                        .content(json))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value(200))
                 .andExpect(jsonPath("$.errorCode").doesNotExist())
@@ -68,17 +67,17 @@ class UserControllerTest {
 
     @Test
     void registerUser_ValidationFail() throws Exception {
-        UserDTO userDTO = UserDTO.builder()
-                .username("test")
-                .password("password123")
-                .phoneNumber("01012345678")
-                .email("test@example.com")
-                .name("홍길동")
-                .build();
+        String json = "{"
+                + "\"username\":\"t\","
+                + "\"password\":\"password123\","
+                + "\"phoneNumber\":\"01012345678\","
+                + "\"email\":\"test@example.com\","
+                + "\"name\":\"홍길동\""
+                + "}";
 
         mockMvc.perform(post("/api/users/register")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(userDTO)))
+                        .content(json))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value(400))
                 .andExpect(jsonPath("$.errorCode").value("VALIDATION_FAILED"))
@@ -88,11 +87,11 @@ class UserControllerTest {
 
     @Test
     void getProfile_Success() throws Exception {
-        String userId = "user123";
+        UUID uuid = UUID.fromString("c90c9ef9-5d3c-49f5-9a04-752cc06f5234");
         UserDTO userDTO = new UserDTO("testuser", "test@example.com", "01012345678", "홍길동");
         when(jwtService.getTokenFromHeader("Bearer test-token")).thenReturn("test-token");
-        when(jwtService.getUserIdFromToken("test-token")).thenReturn(userId);
-        when(userService.getProfile(userId)).thenReturn(userDTO);
+        when(jwtService.getUserIdFromToken("test-token")).thenReturn(uuid);
+        when(userService.getProfile(uuid)).thenReturn(userDTO);
 
         mockMvc.perform(get("/api/users/profile")
                         .header("Authorization", "Bearer test-token"))
@@ -118,7 +117,7 @@ class UserControllerTest {
 
     @Test
     void updateProfile_Success() throws Exception {
-        String userId = "user123";
+        UUID uuid = UUID.fromString("c90c9ef9-5d3c-49f5-9a04-752cc06f5234");
         UserDTO userDTO = UserDTO.builder()
                 .username("testuser")
                 .phoneNumber("01098765432")
@@ -126,8 +125,8 @@ class UserControllerTest {
                 .name("김길동")
                 .build();
         when(jwtService.getTokenFromHeader("Bearer test-token")).thenReturn("test-token");
-        when(jwtService.getUserIdFromToken("test-token")).thenReturn(userId);
-        when(userService.updateProfile(userId, userDTO)).thenReturn(userDTO);
+        when(jwtService.getUserIdFromToken("test-token")).thenReturn(uuid);
+        when(userService.updateProfile(uuid, userDTO)).thenReturn(userDTO);
 
         mockMvc.perform(put("/api/users/profile")
                         .header("Authorization", "Bearer test-token")
@@ -142,82 +141,22 @@ class UserControllerTest {
 
     @Test
     void deleteProfile_Success() throws Exception {
-        String userId = "user123";
-        when(userService.deleteProfile(userId)).thenReturn("회원 탈퇴 성공");
+        UUID uuid = UUID.fromString("c90c9ef9-5d3c-49f5-9a04-752cc06f5234");
+        when(userService.deleteProfile(uuid)).thenReturn("회원 탈퇴 성공");
 
-        mockMvc.perform(delete("/api/users/profile/{userId}", userId))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$").value("회원 탈퇴 성공"));
-    }
-
-    @Test
-    void getBookingDetail_Success() throws Exception {
-        String userId = "user123";
-        BookingDetailDTO booking = BookingDetailDTO.builder()
-                .bookingId(1L)
-                .createdAt(LocalDateTime.now())
-                .checkIn(LocalDate.now().plusDays(1))
-                .checkOut(LocalDate.now().plusDays(2))
-                .paymentCompleted(true)
-                .build();
-        when(jwtService.getTokenFromHeader("Bearer test-token")).thenReturn("test-token");
-        when(jwtService.getUserIdFromToken("test-token")).thenReturn(userId);
-        when(bookingService.getBookingDetail(userId)).thenReturn(Collections.singletonList(booking));
-
-        mockMvc.perform(get("/api/users/book")
-                        .header("Authorization", "Bearer test-token"))
+        mockMvc.perform(delete("/api/users/profile/{userId}", uuid))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value(200))
                 .andExpect(jsonPath("$.errorCode").doesNotExist())
-                .andExpect(jsonPath("$.message").value("예약 조회 성공"))
-                .andExpect(jsonPath("$.data").exists());
+                .andExpect(jsonPath("$.message").value("회원 탈퇴 성공"))
+                .andExpect(jsonPath("$.data").doesNotExist());
     }
 
-    @Test
-    void updateBooking_Success() throws Exception {
-        BookingDetailDTO bookingDTO = BookingDetailDTO.builder()
-                .bookingId(1L)
-                .checkIn(LocalDate.now().plusDays(3))
-                .checkOut(LocalDate.now().plusDays(4))
-                .paymentCompleted(true)
-                .build();
-        when(bookingService.updateBooking(bookingDTO)).thenReturn(bookingDTO);
-
-        mockMvc.perform(put("/api/users/book")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(bookingDTO)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status").value(200))
-                .andExpect(jsonPath("$.errorCode").doesNotExist())
-                .andExpect(jsonPath("$.message").value("예약 변경 성공"))
-                .andExpect(jsonPath("$.data").exists());
-    }
-
-    @Test
-    void deleteBooking_Success() throws Exception {
-        String userId = "user123";
-        Long bookingId = 1L;
-        BookingDetailDTO booking = BookingDetailDTO.builder()
-                .bookingId(bookingId)
-                .checkIn(LocalDate.now().plusDays(1))
-                .checkOut(LocalDate.now().plusDays(2))
-                .build();
-        when(jwtService.getTokenFromHeader("Bearer test-token")).thenReturn("test-token");
-        when(jwtService.getUserIdFromToken("test-token")).thenReturn(userId);
-        when(bookingService.deleteBooking(userId, bookingId)).thenReturn(Collections.singletonList(booking));
-
-        mockMvc.perform(delete("/api/users/book/{bookingId}", bookingId)
-                        .header("Authorization", "Bearer test-token"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status").value(200))
-                .andExpect(jsonPath("$.errorCode").doesNotExist())
-                .andExpect(jsonPath("$.message").value("예약 취소 성공"))
-                .andExpect(jsonPath("$.data").exists());
-    }
 
     @Test
     void passWordReset_Success() throws Exception {
-        String userId = "user123";
+        UUID uuid = UUID.fromString("c90c9ef9-5d3c-49f5-9a04-752cc06f5234");
+
         String json = """
     {
       "password": "newpassword123"
@@ -225,14 +164,17 @@ class UserControllerTest {
     """;
 
         when(jwtService.getTokenFromHeader("Bearer test-token")).thenReturn("test-token");
-        when(jwtService.getUserIdFromToken("test-token")).thenReturn(userId);
-        when(userService.passWordReset(userId, "newpassword123")).thenReturn("비밀번호 변경 성공");
+        when(jwtService.getUserIdFromToken("test-token")).thenReturn(uuid);
+        when(userService.passWordReset(uuid, "newpassword123")).thenReturn("비밀번호 변경 성공");
 
         mockMvc.perform(post("/api/users/password-reset")
                         .header("Authorization", "Bearer test-token")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isOk())
-                .andExpect(content().string("비밀번호 변경 성공"));
+                .andExpect(jsonPath("$.status").value(200))
+                .andExpect(jsonPath("$.errorCode").doesNotExist())
+                .andExpect(jsonPath("$.message").value("비밀번호 변경 성공"))
+                .andExpect(jsonPath("$.data").doesNotExist());
     }
 }

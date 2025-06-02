@@ -1,0 +1,26 @@
+spring:
+  datasource:
+    url: jdbc:mysql://db:3306/Ducktel?useSSL=false&allowPublicKeyRetrieval=true
+    username: DucktelAdmin
+    password: Ducktel123
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+logging:
+  level:
+    root: DEBUG
+    org.springframework.web: DEBUG
+    com.ducktelback: DEBUG
+    sun.rmi.transport.tcp: warn
+    sun.rmi.loader: warn
+    javax.management.remote.rmi: warn
+    org.apache.kafka.clients: WARN
+    org.apache.kafka.common: WARN
+    org.apache.kafka: WARN
+
+#test
+#logging:
+#  level:
+#    root: INFO
+#    com.ducktel.kafka: DEBUG
+#    org.apache.kafka.clients: INFO
+#    org.springframework.web: WARN

@@ -1,10 +1,15 @@
 package com.ducktel.config.security.config;
 
-import com.ducktel.config.security.hadler.FormLoginSuccessHandler;
-import com.ducktel.config.security.hadler.OAuth2LoginSuccessHandler;
+import com.ducktel.config.security.cookie.HttpCookieOAuth2AuthorizationRequestRepository;
+import com.ducktel.config.security.filter.ProtoLoggingFilter;
+import com.ducktel.config.security.handler.FormLoginSuccessHandler;
+import com.ducktel.config.security.handler.OAuth2LoginSuccessHandler;
 import com.ducktel.config.security.jwt.JwtVerifyFilter;
 import com.ducktel.config.security.service.CustomOauth2UserService;
 import com.ducktel.config.security.service.CustomUserDetailsService;
+import com.ducktel.dto.ResponseDTO;
+import com.ducktel.service.JwtService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +25,9 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.web.AuthorizationRequestRepository;
 import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter;
+import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -39,6 +46,7 @@ public class SecurityConfig {
     private final CustomOauth2UserService customOAuth2UserService;
     private final FormLoginSuccessHandler formLoginSuccessHandler;
     private final OAuth2LoginSuccessHandler oauth2LoginSuccessHandler;
+    private final JwtService jwtService;
 
     //password BCrypt으로 변환
     @Bean
@@ -49,6 +57,11 @@ public class SecurityConfig {
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
+    }
+
+    @Bean
+    public AuthorizationRequestRepository<OAuth2AuthorizationRequest> cookieOAuth2AuthorizationRequestRepository() {
+        return new HttpCookieOAuth2AuthorizationRequestRepository();
     }
 
 
@@ -108,7 +121,7 @@ public class SecurityConfig {
 
         // 경로 권한 설정
         http.authorizeHttpRequests(auth -> auth
-                .requestMatchers("/favicon.ico","/api/users/register","/api/auth/login","/login/**","/api/home","/api/sub-home/**").permitAll() // 로그인, 회원가입 등 인증 불필요
+                .requestMatchers("/favicon.ico","/api/users/register","/api/auth/login","/login/**","/api/home","/api/home/**").permitAll() // 로그인, 회원가입 등 인증 불필요
                 .requestMatchers("/api/places/**").permitAll()
                 .anyRequest().authenticated() // 나머지 요청은 인증 필요
         );
@@ -118,14 +131,19 @@ public class SecurityConfig {
                 .successHandler(formLoginSuccessHandler)
                 .failureHandler((request, response, exception) -> {
                     log.error("일반 로그인 실패: {}", exception.getMessage());
-                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    response.setStatus(HttpServletResponse.SC_OK);
+                    ResponseDTO<String> responseDTO = new ResponseDTO<>(401, "LOGIN_FAILED", "로그인 실패", null);
                     response.setContentType("application/json");
-                    response.getWriter().write("{\"error\": \"Login Failed\"}");
+                    response.setCharacterEncoding("UTF-8");
+                    response.getWriter().write(new ObjectMapper().writeValueAsString(responseDTO));
                 })
         );
         // OAuth2 설정
         http.oauth2Login(oauth2 -> oauth2
-                .authorizationEndpoint(auth -> auth.baseUri("/oauth2/authorization"))
+                .authorizationEndpoint(auth -> auth
+                        .baseUri("/oauth2/authorization")
+                        .authorizationRequestRepository(cookieOAuth2AuthorizationRequestRepository()) // ← 이 한 줄 추가
+                )
                 .redirectionEndpoint(redir -> redir.baseUri("/login/oauth2/code/*"))
                 .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
                 .successHandler(oauth2LoginSuccessHandler)
@@ -136,9 +154,9 @@ public class SecurityConfig {
                     response.getWriter().write("{\"error\": \"OAuth2 Login Failed\"}");
                 })
         );
-        http.addFilterBefore(new JwtVerifyFilter(), UsernamePasswordAuthenticationFilter.class);
-        http.addFilterAfter(new JwtVerifyFilter(), OAuth2LoginAuthenticationFilter.class);
-
+        http.addFilterBefore(new JwtVerifyFilter(jwtService), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterAfter(new JwtVerifyFilter(jwtService), OAuth2LoginAuthenticationFilter.class);
+        http.addFilterBefore(new ProtoLoggingFilter(), JwtVerifyFilter.class);
 
         return http.build();
     }

@@ -34,33 +34,45 @@ public class PlacesServiceImpl implements PlacesService {
     //숙소정보, 객실정보, 잔여 객실 정보, 객실 할인 정보
     @Override
     public PlacesDTO getPlaces(Long accommodationId, LocalDate checkInDate, LocalDate checkOutDate) {
+        log.debug("Place 조회 요청: accommodationId={}, checkInDate={}, checkOutDate={}", accommodationId, checkInDate, checkOutDate);
+
         // 숙소 정보
         Accommodation accommodation = accommodationRepository.findById(accommodationId)
-                .orElseThrow(() -> new CustomException(404,"NOT_FOUND", "유효하지 않은 숙소 ID입니다: " + accommodationId));
+                .orElseThrow(() -> {
+                    log.warn("유효하지 않은 숙소 ID: {}", accommodationId);
+                    return new CustomException(404, "NOT_FOUND", "유효하지 않은 숙소 ID입니다: " + accommodationId);
+                });
+        log.debug("숙소 조회 성공: accommodationId={}", accommodationId);
+
         List<String> accommodationImages = accommodationImageRepository.findByAccommodation_AccommodationId(accommodationId)
                 .stream()
                 .map(AccommodationImage::getImage)
                 .toList();
+        log.debug("숙소 이미지 조회 성공: accommodationId={}, imageCount={}", accommodationId, accommodationImages.size());
 
         // 객실 정보
         List<Room> rooms = roomRepository.findAllByAccommodationId(accommodation);
-        log.info("Found {} rooms", rooms.size());
+        log.debug("객실 조회 성공: accommodationId={}, roomCount={}", accommodationId, rooms.size());
+
         List<Long> roomIds = rooms.stream().map(Room::getRoomId).toList();
-        log.info("Room IDs: {}", roomIds);
+        log.debug("객실 ID 목록: {}", roomIds);
 
         // 예약 정보
         List<Object[]> bookedRoomCounts = bookingRepository.findBookedRooms(roomIds, checkInDate, checkOutDate);
-        log.info("Booked room counts: {}", bookedRoomCounts);
+        log.debug("예약된 객실 수 조회 성공: count={}", bookedRoomCounts.size());
+
         Map<Long, Integer> bookedRoomsMap = new HashMap<>();
         for (Object[] result : bookedRoomCounts) {
             Long roomId = (Long) result[0];
             Integer count = ((Long) result[1]).intValue();
             bookedRoomsMap.put(roomId, count);
-            log.info("Room ID: {}, Booked count: {}", roomId, count);
+            log.debug("객실 예약 정보: roomId={}, bookedCount={}", roomId, count);
         }
 
         // 객실 이미지
         List<RoomImage> allRoomImages = roomImageRepository.findByRoom_RoomIdIn(roomIds);
+        log.debug("객실 이미지 조회 성공: roomImageCount={}", allRoomImages.size());
+
         Map<Long, List<String>> roomImagesMap = allRoomImages.stream()
                 .collect(Collectors.groupingBy(
                         roomImage -> roomImage.getRoom().getRoomId(),
@@ -73,8 +85,9 @@ public class PlacesServiceImpl implements PlacesService {
                     int totalRooms = room.getTotalRooms();
                     int bookedCount = bookedRoomsMap.getOrDefault(room.getRoomId(), 0);
                     int available = totalRooms - bookedCount;
-                    log.info("Room ID: {}, Total: {}, Booked: {}, Available: {}",
+                    log.debug("객실 정보: roomId={}, totalRooms={}, bookedCount={}, available={}",
                             room.getRoomId(), totalRooms, bookedCount, available);
+
                     return RoomDTO.builder()
                             .roomId(room.getRoomId())
                             .name(room.getName())
@@ -86,6 +99,7 @@ public class PlacesServiceImpl implements PlacesService {
                             .build();
                 })
                 .collect(Collectors.toList());
+        log.debug("객실 DTO 변환 성공: roomDTOCount={}", roomDTOs.size());
 
         // 숙소 DTO
         AccommodationDTO accommodationDTO = AccommodationDTO.builder()
@@ -98,10 +112,14 @@ public class PlacesServiceImpl implements PlacesService {
                 .likeCount(accommodation.getLikeCount())
                 .image(accommodationImages)
                 .build();
+        log.debug("숙소 DTO 생성 성공: accommodationId={}", accommodation.getAccommodationId());
 
-        return PlacesDTO.builder()
+        PlacesDTO placesDTO = PlacesDTO.builder()
                 .accommodation(accommodationDTO)
                 .rooms(roomDTOs)
                 .build();
+        log.info("Place 조회 성공: accommodationId={}", accommodationId);
+
+        return placesDTO;
     }
 }

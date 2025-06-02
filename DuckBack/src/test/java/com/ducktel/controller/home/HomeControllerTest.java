@@ -51,12 +51,12 @@ class HomeControllerTest {
         HomeResponseDTO mockResponse = new HomeResponseDTO();
         when(homeService.getSubHomeData(category)).thenReturn(mockResponse);
 
-        mockMvc.perform(get("/api/sub-home/{category}", category)
+        mockMvc.perform(get("/api/home/{category}", category)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value(200))
                 .andExpect(jsonPath("$.errorCode").doesNotExist())
-                .andExpect(jsonPath("$.message").value("Sub-Home Data 조회 성공"))
+                .andExpect(jsonPath("$.message").value("CategoryHome Data 조회 성공"))
                 .andExpect(jsonPath("$.data").exists());
     }
 
@@ -67,7 +67,7 @@ class HomeControllerTest {
         HomeResponseDTO mockResponse = new HomeResponseDTO();
         when(homeService.getLocationHomeData(category, location)).thenReturn(mockResponse);
 
-        mockMvc.perform(get("/api/sub-home/{category}/{location}", category, location)
+        mockMvc.perform(get("/api/home/{category}/{location}", category, location)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value(200))
@@ -83,7 +83,7 @@ class HomeControllerTest {
         when(homeService.getSubHomeData(category))
                 .thenThrow(new CustomException(400,"INVALID_CATEGORY", "존재하지 않는 카테고리"));
 
-        mockMvc.perform(get("/api/sub-home/{category}", category))
+        mockMvc.perform(get("/api/home/{category}", category))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value(400))
                 .andExpect(jsonPath("$.errorCode").value("INVALID_CATEGORY"))
@@ -99,7 +99,7 @@ class HomeControllerTest {
         when(homeService.getLocationHomeData(category, location))
                 .thenThrow(new CustomException(400,"INVALID_LOCATION", "위치 값이 유효하지 않습니다"));
 
-        mockMvc.perform(get("/api/sub-home/{category}/{location}", category, location))
+        mockMvc.perform(get("/api/home/{category}/{location}", category, location))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value(400))
                 .andExpect(jsonPath("$.errorCode").value("INVALID_LOCATION"))

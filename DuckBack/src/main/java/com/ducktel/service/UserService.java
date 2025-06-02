@@ -2,11 +2,13 @@ package com.ducktel.service;
 
 import com.ducktel.dto.UserDTO;
 
+import java.util.UUID;
+
 public interface UserService {
     String registerUser(UserDTO userDTO);
-    UserDTO getProfile(String userId);
-    UserDTO updateProfile(String userId, UserDTO userData);
-    String deleteProfile(String userId);
-    String passWordReset(String userId, String newPassword);
-    String toggleLike (String userId, Long accommodationId);
+    UserDTO getProfile(UUID userId);
+    UserDTO updateProfile(UUID userId, UserDTO userData);
+    String deleteProfile(UUID userId);
+    String passWordReset(UUID userId, String newPassword);
+    String toggleLike (UUID userId, Long accommodationId);
 }

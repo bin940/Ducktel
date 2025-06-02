@@ -16,6 +16,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -75,8 +76,8 @@ class BookingServiceImplTest {
 
     @Test
     void getBookingDetail_BookingDetailDTOList() {
-        String userId = "user123";
-        when(bookingRepository.findByUser_UserId(userId)).thenReturn(List.of(booking));
+        UUID uuid = UUID.fromString("c90c9ef9-5d3c-49f5-9a04-752cc06f5234");
+        when(bookingRepository.findByUser_UserId(uuid)).thenReturn(List.of(booking));
         when(roomRepository.findById(room.getRoomId())).thenReturn(Optional.of(room));
 
         RoomImage roomImage = new RoomImage();
@@ -91,7 +92,7 @@ class BookingServiceImplTest {
         accommodationImage.setAccommodation(accommodation);
         when(accommodationImageRepository.findByAccommodation_AccommodationId(accommodation.getAccommodationId())).thenReturn(List.of(accommodationImage));
 
-        List<BookingDetailDTO> result = bookingService.getBookingDetail(userId);
+        List<BookingDetailDTO> result = bookingService.getBookingDetail(uuid);
 
         assertThat(result).hasSize(1);
         BookingDetailDTO dto = result.get(0);

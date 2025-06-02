@@ -35,26 +35,33 @@ public class CustomOauth2UserService extends DefaultOAuth2UserService {
         Map<String, Object> attributes = oAuth2User.getAttributes();
         String registrationId = userRequest.getClientRegistration().getRegistrationId();
 
-        // 소셜 로그인 정보 변환
+        log.debug("OAuth2 사용자 속성 로드 성공: attributes={}", attributes);
+
         SocialUserInfoDTO socialUserInfo;
         if ("kakao".equals(registrationId)) {
             String accessToken = userRequest.getAccessToken().getTokenValue();
-            socialUserInfo = fetchKakaoUserInfo(accessToken); // Kakao는 추가 API 호출 필요
+            log.debug("카카오 사용자 정보 요청: accessToken={}", accessToken);
+            socialUserInfo = fetchKakaoUserInfo(accessToken);
         } else if ("google".equals(registrationId)) {
+            log.debug("구글 사용자 정보 처리 중");
             socialUserInfo = new GoogleUserInfoDTO(attributes);
         } else if ("naver".equals(registrationId)) {
+            log.debug("네이버 사용자 정보 처리 중");
             socialUserInfo = new NaverUserInfoDTO(attributes);
         } else {
+            log.warn("지원하지 않는 소셜 로그인 플랫폼: {}", registrationId);
             throw new OAuth2AuthenticationException("지원하지 않는 소셜 로그인 플랫폼입니다.");
         }
 
-        // 사용자 정보 조회 또는 저장
+        log.debug("소셜 사용자 정보 변환 성공: socialId={}, provider={}", socialUserInfo.getSocialId(), socialUserInfo.getProvider());
+
         User user = userRepository.findBySocialId(socialUserInfo.getSocialId())
                 .orElseGet(() -> {
                     Optional<User> userByEmail = userRepository.findByEmail(socialUserInfo.getEmail());
 
                     if (userByEmail.isPresent()) {
                         User existingUser = userByEmail.get();
+                        log.debug("기존 사용자 이메일로 조회 성공: email={}", socialUserInfo.getEmail());
                         if (existingUser.getSocialId() == null) {
                             existingUser.setSocialId(socialUserInfo.getSocialId());
                         }
@@ -65,6 +72,7 @@ public class CustomOauth2UserService extends DefaultOAuth2UserService {
                         return userRepository.save(existingUser);
                     }
 
+                    log.info("신규 소셜 사용자 저장: socialId={}, email={}", socialUserInfo.getSocialId(), socialUserInfo.getEmail());
                     return saveSocialUser(
                             socialUserInfo.getSocialId(),
                             socialUserInfo.getName(),
@@ -72,8 +80,6 @@ public class CustomOauth2UserService extends DefaultOAuth2UserService {
                             socialUserInfo.getEmail()
                     );
                 });
-
-
 
         log.info("OAuth2 로그인 사용자 정보: name={}, socialId={}, email={}, role={}",
                 user.getName(), user.getSocialId(), user.getEmail(), user.getRole());
@@ -83,7 +89,7 @@ public class CustomOauth2UserService extends DefaultOAuth2UserService {
 
     public User saveSocialUser(String socialId, String name, String provider, String email) {
         log.info("신규 소셜 사용자 저장: socialId={}, name={}, provider={}, email={}", socialId, name, provider, email);
-        String userIdUUID = UUID.randomUUID().toString();
+        UUID userIdUUID = UUID.randomUUID();
         User user = new User();
         user.setUserId(userIdUUID);
         user.setSocialId(socialId);
@@ -119,9 +125,11 @@ public class CustomOauth2UserService extends DefaultOAuth2UserService {
         Map<String, Object> userInfo = response.getBody();
         log.info("카카오 API 응답: {}", userInfo);
         if (userInfo == null) {
+            log.error("카카오 사용자 정보가 비어 있습니다.");
             throw new OAuth2AuthenticationException("카카오 사용자 정보를 가져오지 못했습니다.");
         }
 
+        log.info("카카오 사용자 정보 로드 성공: {}", userInfo);
         return new KakaoUserInfoDTO(userInfo);
     }
 }
