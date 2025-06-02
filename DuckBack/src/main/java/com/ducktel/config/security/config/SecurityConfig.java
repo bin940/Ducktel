@@ -1,8 +1,9 @@
 package com.ducktel.config.security.config;
 
 import com.ducktel.config.security.cookie.HttpCookieOAuth2AuthorizationRequestRepository;
-import com.ducktel.config.security.hadler.FormLoginSuccessHandler;
-import com.ducktel.config.security.hadler.OAuth2LoginSuccessHandler;
+import com.ducktel.config.security.filter.ProtoLoggingFilter;
+import com.ducktel.config.security.handler.FormLoginSuccessHandler;
+import com.ducktel.config.security.handler.OAuth2LoginSuccessHandler;
 import com.ducktel.config.security.jwt.JwtVerifyFilter;
 import com.ducktel.config.security.service.CustomOauth2UserService;
 import com.ducktel.config.security.service.CustomUserDetailsService;
@@ -155,7 +156,7 @@ public class SecurityConfig {
         );
         http.addFilterBefore(new JwtVerifyFilter(jwtService), UsernamePasswordAuthenticationFilter.class);
         http.addFilterAfter(new JwtVerifyFilter(jwtService), OAuth2LoginAuthenticationFilter.class);
-
+        http.addFilterBefore(new ProtoLoggingFilter(), JwtVerifyFilter.class);
 
         return http.build();
     }

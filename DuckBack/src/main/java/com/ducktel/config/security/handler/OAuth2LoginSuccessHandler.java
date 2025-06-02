@@ -1,11 +1,9 @@
-package com.ducktel.config.security.hadler;
+package com.ducktel.config.security.handler;
 
 import com.ducktel.config.security.jwt.JwtUtils;
 import com.ducktel.domain.entity.User;
 import com.ducktel.domain.repository.RefreshTokenRedisRepository;
 import com.ducktel.dto.PrincipalDetailDTO;
-import com.ducktel.dto.ResponseDTO;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -19,9 +17,8 @@ import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
-public class FormLoginSuccessHandler implements AuthenticationSuccessHandler {
+public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
     private final RefreshTokenRedisRepository refreshTokenRedisRepository;
-    private final ObjectMapper objectMapper;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -40,29 +37,25 @@ public class FormLoginSuccessHandler implements AuthenticationSuccessHandler {
 
         saveRefreshToken(user.getUserId(), refreshToken);
 
-        // refreshToken을 HttpOnly 쿠키로 설정
+        String loginType = user.getProvider().toUpperCase();
+
         jakarta.servlet.http.Cookie refreshCookie = new jakarta.servlet.http.Cookie("refreshToken", refreshToken);
         refreshCookie.setHttpOnly(true);
+        refreshCookie.setSecure(true);
         refreshCookie.setPath("/");
+        refreshCookie.setDomain("ducktel.uk");
         refreshCookie.setMaxAge(60 * 60 * 24 * 7);
+
         response.addCookie(refreshCookie);
 
-        Map<String, String> responseMap = Map.of(
-                "accessToken", accessToken,
-                "loginType", "LOCAL"
-        );
+        String redirectUrl = "https://www.ducktel.uk/login" +
+                "?accessToken=" + accessToken +
+                "&loginType=" + loginType;
 
-        ResponseDTO<Map<String, String>> responseDTO = new ResponseDTO<>(200, null, "로그인 성공", responseMap);
-        sendJsonResponse(response, responseDTO);
+        response.sendRedirect(redirectUrl);
     }
 
     private void saveRefreshToken(UUID userId, String refreshToken) {
-        refreshTokenRedisRepository.save(userId, refreshToken, 7L);
-    }
-
-    private void sendJsonResponse(HttpServletResponse response, ResponseDTO<?> responseDTO) throws IOException {
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-        response.getWriter().write(objectMapper.writeValueAsString(responseDTO));
+        refreshTokenRedisRepository.save(userId, refreshToken, 7);
     }
 }
