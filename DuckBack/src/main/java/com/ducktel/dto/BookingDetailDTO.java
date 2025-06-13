@@ -25,7 +25,7 @@ public class BookingDetailDTO {
     private RoomDTO room;
 
 
-    public Booking updateBooikng(Booking booking) {
+    public Booking updateBookinng(Booking booking) {
         return booking.toBuilder()
                 .checkIn(this.checkIn)
                 .checkOut(this.checkOut)

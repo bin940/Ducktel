@@ -142,7 +142,7 @@ public class SecurityConfig {
         http.oauth2Login(oauth2 -> oauth2
                 .authorizationEndpoint(auth -> auth
                         .baseUri("/oauth2/authorization")
-                        .authorizationRequestRepository(cookieOAuth2AuthorizationRequestRepository()) // ← 이 한 줄 추가
+                        .authorizationRequestRepository(cookieOAuth2AuthorizationRequestRepository()) //쿠키추가
                 )
                 .redirectionEndpoint(redir -> redir.baseUri("/login/oauth2/code/*"))
                 .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))

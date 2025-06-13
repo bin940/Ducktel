@@ -10,7 +10,7 @@ public class AccommodationImage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "image_id")
-    private int imageId;
+    private Long imageId;
 
     @ManyToOne
     @JoinColumn(name = "accommodation_id", nullable = false)

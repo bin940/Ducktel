@@ -1,8 +1,8 @@
 package com.ducktel.dto;
 
-import lombok.extern.slf4j.Slf4j;
-
 import java.util.Map;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class KakaoUserInfoDTO implements SocialUserInfoDTO {
@@ -11,21 +11,26 @@ public class KakaoUserInfoDTO implements SocialUserInfoDTO {
     private final String provider;
     private final String email;
 
+    @SuppressWarnings("unchecked")
     public KakaoUserInfoDTO(Map<String, Object> attributes) {
         this.socialId = String.valueOf(attributes.get("id"));
-        Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
+        Object kakaoAccountObj = attributes.get("kakao_account");
+        Map<String, Object> kakaoAccount = null;
 
-        if (kakaoAccount == null) {
-            log.error("kakao_account가 null입니다!");
+        if (!(kakaoAccountObj instanceof Map)) {
+            log.error("kakao_account가 Map 형식이 아닙니다!");
             this.name = "Unknown";
             this.email = "Unknown";
         } else {
-            Map<String, Object> profile = (Map<String, Object>) kakaoAccount.get("profile");
+            kakaoAccount = (Map<String, Object>) kakaoAccountObj;
+            Object profileObj = kakaoAccount.get("profile");
+            Map<String, Object> profile = null;
 
-            if (profile == null) {
-                log.error("profile 정보가 없습니다!");
+            if (!(profileObj instanceof Map)) {
+                log.error("profile이 Map 형식이 아닙니다!");
                 this.name = "Unknown";
             } else {
+                profile = (Map<String, Object>) profileObj;
                 this.name = (String) profile.getOrDefault("nickname", "Unknown");
             }
 
