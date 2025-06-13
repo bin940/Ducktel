@@ -103,7 +103,7 @@ public class CustomOauth2UserService extends DefaultOAuth2UserService {
     }
 
     public KakaoUserInfoDTO fetchKakaoUserInfo(String accessToken) {
-        log.info("카카오 사용자 정보를 가져오는 중...");
+        log.info("카카오 사용자 정보를 가져오는 중: accessToken={}", accessToken);
 
         String requestUrl = "https://kapi.kakao.com/v2/user/me";
 

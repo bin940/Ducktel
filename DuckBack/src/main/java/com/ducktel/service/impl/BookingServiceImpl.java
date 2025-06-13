@@ -51,7 +51,7 @@ public class BookingServiceImpl implements BookingService {
                 });
 
         log.info("Booking 업데이트 진행: bookingId={}", bookingId);
-        booking = bookingData.updateBooikng(booking);
+        booking = bookingData.updateBookinng(booking);
         Booking updatedBooking = bookingRepository.save(booking);
 
         log.info("Booking 업데이트 성공: bookingId={}", bookingId);
