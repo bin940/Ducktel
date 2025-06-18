@@ -2,7 +2,7 @@ package com.ducktel.controller.payment;
 
 import com.ducktel.dto.PaymentRequestDTO;
 import com.ducktel.dto.ResponseDTO;
-import com.ducktel.kafka.KafkaProducer;
+import com.ducktel.kafka.KafkaProducerService;
 import com.ducktel.service.JwtService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -22,7 +22,7 @@ import java.util.UUID;
 @Slf4j
 public class PaymentController {
 
-    private final KafkaProducer kafkaProducer;
+    private final KafkaProducerService kafkaProducerService;
     private final JwtService jwtService;
 
     @PostMapping("/create")
@@ -42,7 +42,7 @@ public class PaymentController {
         paymentRequestDTO.setUserId(userId);
         log.debug("결제 요청 데이터에 사용자 ID 설정 완료: {}", paymentRequestDTO);
 
-        kafkaProducer.sendPayment(paymentRequestDTO);
+        kafkaProducerService.sendPayment(paymentRequestDTO);
 
         return ResponseEntity.ok(new ResponseDTO<>(200, null, "결제 요청을 Kafka로 전송 완료", null));
 
