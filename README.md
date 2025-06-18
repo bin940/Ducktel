@@ -77,17 +77,17 @@ ducktel/
 
 ## 사용 기술
 
-| 영역             | 기술 스택 및 설명                                                                                      |
-|------------------|-------------------------------------------------------------------------------------------------|
-| **Backend**       | Java 17, Spring Boot, Spring Security, JPA                                                      |
-| **인증**          | OAuth2 (Google), JWT, Bean Validation                                                           |
-| **Database**      | MySQL                                                                                           |
-| **Storage**       | MinIO (스토리지로 이미지 저장), Redis(토큰 관리)                                                              |
-| **Frontend**      | Vue 3, Vue Router, Axios, Vite                                                                  |
+| 영역             | 기술 스택 및 설명                                                                                 |
+|------------------|--------------------------------------------------------------------------------------------|
+| **Backend**       | Java 17, Spring Boot, Spring Security, JPA                                                 |
+| **인증**          | OAuth2 (Google), JWT, Validation                                                           |
+| **Database**      | MySQL                                                                                      |
+| **Storage**       | MinIO (스토리지로 이미지 저장), Redis(토큰 관리)                                                         |
+| **Frontend**      | Vue 3, Vue Router, Axios, Vite                                                             |
 | **Infra / 배포**  | Docker, Docker Compose, Kafka, Vercel (프론트 배포), Cloudflare Tunnel (백엔드 HTTPS 연결), Cloudflare DNS |
-| **Version Control** | Git, GitHub                                                                                     |
-| **빌드 도구**      | Gradle                                                                                          |
-
+| **Version Control** | Git, GitHub                                                                                |
+| **빌드 도구**      | Gradle                                                                                     |
+[사용기술 정리](https://goose-duck.tistory.com/category/%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8/ducktel)
 ---
 
 ##  API 엔드포인트
