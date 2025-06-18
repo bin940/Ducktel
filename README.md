@@ -76,6 +76,7 @@ ducktel/
 ---
 
 ## 사용 기술
+[사용기술 정리](https://goose-duck.tistory.com/category/%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8/ducktel)
 
 | 영역             | 기술 스택 및 설명                                                                                 |
 |------------------|--------------------------------------------------------------------------------------------|
@@ -87,9 +88,8 @@ ducktel/
 | **Infra / 배포**  | Docker, Docker Compose, Kafka, Vercel (프론트 배포), Cloudflare Tunnel (백엔드 HTTPS 연결), Cloudflare DNS |
 | **Version Control** | Git, GitHub                                                                                |
 | **빌드 도구**      | Gradle                                                                                     |
-[사용기술 정리](https://goose-duck.tistory.com/category/%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8/ducktel)
----
 
+---
 ##  API 엔드포인트
 [전체 API 문서 보기 (Postman)](https://documenter.getpostman.com/view/40259480/2sB2qUnQEB)
 
